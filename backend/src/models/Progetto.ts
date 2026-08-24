@@ -1,11 +1,21 @@
-import { Model, DataTypes } from 'sequelize';
+// models/Progetto.ts
+
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export class Progetto extends Model {
-  declare id: number;
+export class Progetto extends Model<InferAttributes<Progetto>, InferCreationAttributes<Progetto>> {
+  declare id: CreationOptional<number>;
   declare nome: string;
   declare descrizione: string | null;
   declare creatoDa: number; // FK verso Utente
+
+  modificaNome(nuovoNome: string): void {
+    this.nome = nuovoNome;
+  }
+
+  modificaDescrizione(nuovaDescrizione: string | null): void {
+    this.descrizione = nuovaDescrizione;
+  }
 }
 
 Progetto.init(

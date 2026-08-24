@@ -6,6 +6,7 @@ import { sequelize } from './config/database';
 import { definisciAssociazioni } from './models/associations';
 
 import issueRoutes from './routes/issue.routes';
+import progettoRoutes from './routes/project.routes';
 
 import './models/Utente';
 import './models/Progetto';
@@ -31,6 +32,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api', issueRoutes);
+app.use('/api', progettoRoutes);
 
 async function avvia() {
   try {

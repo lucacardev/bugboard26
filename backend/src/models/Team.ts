@@ -1,10 +1,16 @@
-import { Model, DataTypes } from 'sequelize';
+// models/Team.ts
+
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export class Team extends Model {
-  declare id: number;
+export class Team extends Model<InferAttributes<Team>, InferCreationAttributes<Team>> {
+  declare id: CreationOptional<number>;
   declare nome: string;
   declare progettoId: number; // FK verso Progetto, UNIQUE per garantire 1:1
+
+  cambiaNome(nuovoNome: string): void {
+    this.nome = nuovoNome;
+  }
 }
 
 Team.init(
@@ -14,7 +20,7 @@ Team.init(
     progettoId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true, // <-- questo è ciò che garantisce la cardinalità 1:1, non 1:N
+      unique: true,
     },
   },
   {
