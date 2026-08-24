@@ -1,8 +1,10 @@
-import { Model, DataTypes } from 'sequelize';
+// models/MembroTeam.ts
+
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export class MembroTeam extends Model {
-  declare id: number;
+export class MembroTeam extends Model<InferAttributes<MembroTeam>, InferCreationAttributes<MembroTeam>> {
+  declare id: CreationOptional<number>;
   declare teamId: number;
   declare utenteId: number;
 }
@@ -17,6 +19,6 @@ MembroTeam.init(
     sequelize,
     tableName: 'membri_team',
     timestamps: true,
-    indexes: [{ unique: true, fields: ['teamId', 'utenteId'] }], // stesso utente non duplicato nello stesso team
+    indexes: [{ unique: true, fields: ['teamId', 'utenteId'] }],
   }
 );

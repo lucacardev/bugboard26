@@ -7,6 +7,7 @@ import { definisciAssociazioni } from './models/associations';
 
 import issueRoutes from './routes/issue.routes';
 import progettoRoutes from './routes/project.routes';
+import teamRoutes from './routes/team.routes';
 
 import './models/Utente';
 import './models/Progetto';
@@ -33,6 +34,7 @@ app.use(express.json());
 
 app.use('/api', issueRoutes);
 app.use('/api', progettoRoutes);
+app.use('/api', teamRoutes);
 
 async function avvia() {
   try {
