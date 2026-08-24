@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import { sequelize } from './config/database';
 import { definisciAssociazioni } from './models/associations';
 
+import issueRoutes from './routes/issue.routes';
+
 import './models/Utente';
 import './models/Progetto';
 import './models/Team';
@@ -28,10 +30,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Qui, più avanti, registreremo le route:
-// app.use('/api/issues', issueRoutes);
-// app.use('/api/projects', projectRoutes);
-// ecc.
+app.use('/api', issueRoutes);
 
 async function avvia() {
   try {
