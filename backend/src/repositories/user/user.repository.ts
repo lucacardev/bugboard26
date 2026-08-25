@@ -24,7 +24,7 @@ export class UserRepository {
     return Utente.findAll({
       include: [
         {
-          association: 'Teams',
+          association: 'team',
           where: { id: teamId },
           attributes: [],
         },

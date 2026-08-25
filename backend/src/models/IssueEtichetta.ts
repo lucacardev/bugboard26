@@ -1,9 +1,10 @@
-// backend/src/models/IssueEtichetta.ts
-import { Model, DataTypes } from 'sequelize';
+// models/IssueEtichetta.ts
+
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export class IssueEtichetta extends Model {
-  declare id: number;
+export class IssueEtichetta extends Model<InferAttributes<IssueEtichetta>, InferCreationAttributes<IssueEtichetta>> {
+  declare id: CreationOptional<number>;
   declare issueId: number;
   declare etichettaId: number;
 }

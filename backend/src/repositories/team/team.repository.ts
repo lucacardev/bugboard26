@@ -16,10 +16,10 @@ export class TeamRepository {
 
   async findMembri(teamId: number): Promise<Utente[]> {
     const team = await Team.findByPk(teamId, {
-      include: [{ model: Utente, through: { attributes: [] } }],
+        include: [{ model: Utente, as: 'membri', through: { attributes: [] } }],
     });
-    return team ? (team as any).Utentes ?? [] : [];
-  }
+    return team ? (team as any).membri ?? [] : [];
+   }
 
   async create(dati: CreationAttributes<Team>, transaction?: Transaction): Promise<Team> {
     return Team.create(dati, { transaction });

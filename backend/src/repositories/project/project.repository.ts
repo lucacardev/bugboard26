@@ -14,19 +14,20 @@ export class ProgettoRepository {
 
   async findByUtente(utenteId: number): Promise<Progetto[]> {
     return Progetto.findAll({
-      include: [
+        include: [
         {
-          model: Team,
-          required: true,
-          include: [
+            model: Team,
+            required: true,
+            include: [
             {
-              model: Utente,
-              where: { id: utenteId },
-              through: { attributes: [] },
+                model: Utente,
+                as: 'membri',   // <-- aggiunto, coerente con il nuovo alias su Team
+                where: { id: utenteId },
+                through: { attributes: [] },
             },
-          ],
+            ],
         },
-      ],
+        ],
     });
   }
 

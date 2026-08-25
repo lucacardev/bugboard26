@@ -10,6 +10,7 @@ import progettoRoutes from './routes/project.routes';
 import teamRoutes from './routes/team.routes';
 import userRoutes from './routes/user.routes';
 import commentoRoutes from './routes/comment.routes';
+import labelRoutes from './routes/label.routes';
 
 import './models/Utente';
 import './models/Progetto';
@@ -39,6 +40,7 @@ app.use('/api', progettoRoutes);
 app.use('/api', teamRoutes);
 app.use('/api', userRoutes);
 app.use('/api', commentoRoutes);
+app.use('/api', labelRoutes);
 
 async function avvia() {
   try {

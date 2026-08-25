@@ -1,11 +1,17 @@
-import { Model, DataTypes } from 'sequelize';
+// models/Etichetta.ts
+
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export class Etichetta extends Model {
-  declare id: number;
+export class Etichetta extends Model<InferAttributes<Etichetta>, InferCreationAttributes<Etichetta>> {
+  declare id: CreationOptional<number>;
   declare testo: string;
   declare colore: string;
-  declare progettoId: number; // etichette gestite a livello di progetto
+  declare progettoId: number;
+
+  modificaColore(nuovoColore: string): void {
+    this.colore = nuovoColore;
+  }
 }
 
 Etichetta.init(
@@ -19,15 +25,6 @@ Etichetta.init(
     sequelize,
     tableName: 'etichette',
     timestamps: true,
-    indexes: [
-      {
-        unique: true,
-        fields: ['progettoId', 'testo'], // non permettere due righe con la stessa combinazione esatta di progettoId e testo
-        // garantisce unicità case-sensitive a livello DB;
-        // la gestione case-insensitive (punto 10 traccia) va applicata
-        // nel Service prima dell'INSERT (es. normalizzando in lowercase
-        // o con un controllo esplicito), non esprimibile qui direttamente
-      },
-    ],
+    indexes: [{ unique: true, fields: ['progettoId', 'testo'] }],
   }
 );

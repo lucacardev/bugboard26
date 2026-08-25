@@ -31,10 +31,6 @@ export function definisciAssociazioni() {
   Utente.hasMany(Issue, { foreignKey: 'assegnatarioId', as: 'issueAssegnate' });
   Issue.belongsTo(Utente, { foreignKey: 'assegnatarioId', as: 'assegnatario' });
 
-  // Issue - Commento (composizione 1:N)
-  Issue.hasMany(Commento, { foreignKey: 'issueId', onDelete: 'CASCADE' });
-  Commento.belongsTo(Issue, { foreignKey: 'issueId' });
-
   // Utente - Commento (scrive)
   Utente.hasMany(Commento, { foreignKey: 'autoreId' });
   Commento.belongsTo(Utente, { foreignKey: 'autoreId' });
@@ -52,10 +48,10 @@ export function definisciAssociazioni() {
   VoceCronologia.belongsTo(Utente, { foreignKey: 'autoreId' });
 
   // Team - Utente (membro_di, N:N tramite MembroTeam esplicito)
-  Team.belongsToMany(Utente, { through: MembroTeam, foreignKey: 'teamId', otherKey: 'utenteId' });
-  Utente.belongsToMany(Team, { through: MembroTeam, foreignKey: 'utenteId', otherKey: 'teamId' });
+  Team.belongsToMany(Utente, { through: MembroTeam, foreignKey: 'teamId', otherKey: 'utenteId', as: 'membri' });
+  Utente.belongsToMany(Team, { through: MembroTeam, foreignKey: 'utenteId', otherKey: 'teamId', as: 'team' });
 
   // Issue - Etichetta (possiede, N:N tramite IssueEtichetta esplicito)
-  Issue.belongsToMany(Etichetta, { through: IssueEtichetta, foreignKey: 'issueId', otherKey: 'etichettaId' });
-  Etichetta.belongsToMany(Issue, { through: IssueEtichetta, foreignKey: 'etichettaId', otherKey: 'issueId' });
+  Issue.belongsToMany(Etichetta, { through: IssueEtichetta, foreignKey: 'issueId', otherKey: 'etichettaId', as: 'etichette' });
+  Etichetta.belongsToMany(Issue, { through: IssueEtichetta, foreignKey: 'etichettaId', otherKey: 'issueId', as: 'issue' });
 }
