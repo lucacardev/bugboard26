@@ -1,9 +1,10 @@
-// backend/src/models/Allegato.ts
-import { Model, DataTypes } from 'sequelize';
+// models/Allegato.ts
+
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export class Allegato extends Model {
-  declare id: number;
+export class Allegato extends Model<InferAttributes<Allegato>, InferCreationAttributes<Allegato>> {
+  declare id: CreationOptional<number>;
   declare urlKey: string;
   declare nomeFile: string;
   declare tipoMime: string;

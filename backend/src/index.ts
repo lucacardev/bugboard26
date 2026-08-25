@@ -11,6 +11,7 @@ import teamRoutes from './routes/team.routes';
 import userRoutes from './routes/user.routes';
 import commentoRoutes from './routes/comment.routes';
 import labelRoutes from './routes/label.routes';
+import attachmentRoutes from './routes/attachment.routes';
 
 import './models/Utente';
 import './models/Progetto';
@@ -41,6 +42,7 @@ app.use('/api', teamRoutes);
 app.use('/api', userRoutes);
 app.use('/api', commentoRoutes);
 app.use('/api', labelRoutes);
+app.use('/api', attachmentRoutes);
 
 async function avvia() {
   try {
