@@ -28,22 +28,23 @@ export class AttachmentController {
     }
   };
 
+
   confermaCaricamento = async (req: Request, res: Response): Promise<void> => {
-    const { urlKey, nomeFile, tipoMime, dimensione, issueId } = req.body;
-    if (!urlKey || !nomeFile || !tipoMime || !dimensione || !issueId) {
-      res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: urlKey, nomeFile, tipoMime, dimensione, issueId' } });
-      return;
-    }
-    if (dimensione > DIMENSIONE_MASSIMA_BYTES) {
-      res.status(400).json({ errore: { codice: 'FILE_TROPPO_GRANDE', messaggio: `Dimensione massima consentita: ${DIMENSIONE_MASSIMA_BYTES / 1024 / 1024} MB` } });
-      return;
+    const { urlKey, nomeFile, issueId } = req.body;
+    if (!urlKey || !nomeFile || !issueId) {
+        res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: urlKey, nomeFile, issueId' } });
+        return;
     }
     try {
-      const allegato = await this.attachmentService.confermaCaricamento({ urlKey, nomeFile, tipoMime, dimensione, issueId });
-      res.status(201).json(allegato);
+        const allegato = await this.attachmentService.confermaCaricamento({ urlKey, nomeFile, issueId });
+        res.status(201).json(allegato);
     } catch (errore) {
-      console.error('Errore durante la conferma del caricamento:', errore);
-      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante la conferma del caricamento' } });
+        if (errore instanceof Error && errore.message === 'FILE_NON_TROVATO_SU_S3') {
+        res.status(400).json({ errore: { codice: 'FILE_NON_TROVATO_SU_S3', messaggio: 'Il file non risulta caricato su S3. Assicurati di aver completato l\'upload prima di confermare.' } });
+        return;
+        }
+        console.error('Errore durante la conferma del caricamento:', errore);
+        res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante la conferma del caricamento' } });
     }
   };
 

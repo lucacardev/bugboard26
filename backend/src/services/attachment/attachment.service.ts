@@ -19,8 +19,6 @@ export interface RispostaUploadAllegato {
 export interface ConfermaCaricamentoAllegato {
   urlKey: string;
   nomeFile: string;
-  tipoMime: string;
-  dimensione: number;
   issueId: number;
 }
 
@@ -39,7 +37,20 @@ export class AttachmentService {
   }
 
   async confermaCaricamento(dati: ConfermaCaricamentoAllegato): Promise<Allegato> {
-    return this.attachmentRepository.create(dati);
+    let metadatiReali;
+    try {
+        metadatiReali = await this.s3Service.verificaOggetto(dati.urlKey);
+    } catch (errore) {
+        throw new Error('FILE_NON_TROVATO_SU_S3');
+    }
+
+    return this.attachmentRepository.create({
+        urlKey: dati.urlKey,
+        nomeFile: dati.nomeFile,
+        issueId: dati.issueId,
+        dimensione: metadatiReali.dimensione,
+        tipoMime: metadatiReali.tipoMime,
+    });
   }
 
   async getAllegatiIssue(issueId: number): Promise<Allegato[]> {
