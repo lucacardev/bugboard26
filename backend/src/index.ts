@@ -8,6 +8,8 @@ import { definisciAssociazioni } from './models/associations';
 import issueRoutes from './routes/issue.routes';
 import progettoRoutes from './routes/project.routes';
 import teamRoutes from './routes/team.routes';
+import userRoutes from './routes/user.routes';
+import commentoRoutes from './routes/comment.routes';
 
 import './models/Utente';
 import './models/Progetto';
@@ -35,6 +37,8 @@ app.use(express.json());
 app.use('/api', issueRoutes);
 app.use('/api', progettoRoutes);
 app.use('/api', teamRoutes);
+app.use('/api', userRoutes);
+app.use('/api', commentoRoutes);
 
 async function avvia() {
   try {

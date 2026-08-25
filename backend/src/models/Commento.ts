@@ -1,11 +1,17 @@
-import { Model, DataTypes } from 'sequelize';
+// models/Commento.ts
+
+import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export class Commento extends Model {
-  declare id: number;
+export class Commento extends Model<InferAttributes<Commento>, InferCreationAttributes<Commento>> {
+  declare id: CreationOptional<number>;
   declare testo: string;
   declare issueId: number;
   declare autoreId: number;
+
+  modificaTesto(nuovoTesto: string): void {
+    this.testo = nuovoTesto;
+  }
 }
 
 Commento.init(

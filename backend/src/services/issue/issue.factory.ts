@@ -6,7 +6,7 @@ import { Feature } from '../../models/Feature';
 
 export interface DatiCreazioneIssue {
   titolo: string;
-  descrizione?: string;
+  descrizione: string;   
   priorita?: string;
   dataInizio?: Date;
   dataScadenza?: Date;
