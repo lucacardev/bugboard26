@@ -7,6 +7,7 @@ import { IssueRepository } from '../repositories/issue/issue.repository';
 import { CronologiaRepository } from '../repositories/cronologia/cronologia.repository';
 import { CronologiaService } from '../services/cronologia/cronologia.service';
 import { CronologiaObserver } from '../services/cronologia/cronologia.observer';
+import { NotificationObserver } from '../services/notification/notification.observer';
 import { autenticazione, soloAmministratore } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -14,13 +15,10 @@ const router = Router();
 const issueRepository = new IssueRepository();
 const issueService = new IssueService(issueRepository);
 
-// Registrazione dell'Observer (Lecture 19A): da qui in poi ogni evento
-// rilevante orchestrato da IssueService genera automaticamente una
-// VoceCronologia, senza che IssueService debba conoscere CronologiaService.
 const cronologiaRepository = new CronologiaRepository();
 const cronologiaService = new CronologiaService(cronologiaRepository);
-const cronologiaObserver = new CronologiaObserver(cronologiaService);
-issueService.attach(cronologiaObserver);
+issueService.attach(new CronologiaObserver(cronologiaService));
+issueService.attach(new NotificationObserver());
 
 const issueController = new IssueController(issueService);
 

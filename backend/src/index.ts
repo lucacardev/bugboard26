@@ -14,6 +14,8 @@ import labelRoutes from './routes/label.routes';
 import attachmentRoutes from './routes/attachment.routes';
 import authRoutes from './routes/auth.routes';
 import cronologiaRoutes from './routes/cronologia.routes';
+import notificationRoutes from './routes/notification.routes';
+import './services/notification/notification.worker'; // avvia il Worker BullMQ nello stesso processo
 
 import './models/Utente';
 import './models/Progetto';
@@ -47,6 +49,7 @@ app.use('/api', labelRoutes);
 app.use('/api', attachmentRoutes);
 app.use('/api', authRoutes);
 app.use('/api', cronologiaRoutes);
+app.use('/api', notificationRoutes);
 
 async function avvia() {
   try {

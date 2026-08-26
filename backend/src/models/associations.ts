@@ -9,6 +9,7 @@ import { Allegato } from './Allegato';
 import { VoceCronologia } from './VoceCronologia';
 import { MembroTeam } from './MembroTeam';
 import { IssueEtichetta } from './IssueEtichetta';
+import { Notifica } from './Notifica';
 
 export function definisciAssociazioni() {
   // Progetto - Team (composizione 1:1)
@@ -54,4 +55,12 @@ export function definisciAssociazioni() {
   // Issue - Etichetta (possiede, N:N tramite IssueEtichetta esplicito)
   Issue.belongsToMany(Etichetta, { through: IssueEtichetta, foreignKey: 'issueId', otherKey: 'etichettaId', as: 'etichette' });
   Etichetta.belongsToMany(Issue, { through: IssueEtichetta, foreignKey: 'etichettaId', otherKey: 'issueId', as: 'issue' });
+
+  // Utente - Notifica (riceve)
+  Utente.hasMany(Notifica, { foreignKey: 'utenteId', onDelete: 'CASCADE' });
+  Notifica.belongsTo(Utente, { foreignKey: 'utenteId' });
+
+  // Issue - Notifica (riferimento opzionale)
+  Issue.hasMany(Notifica, { foreignKey: 'issueId', onDelete: 'CASCADE' });
+  Notifica.belongsTo(Issue, { foreignKey: 'issueId' });
 }

@@ -1,12 +1,18 @@
 // services/cronologia/observer-cronologia.interface.ts
 
-import { Issue } from '../../models/Issue';
+import { Issue, StatoIssue } from '../../models/Issue';
+
+export interface EventoIssue {
+  issue: Issue;
+  descrizione: string;
+  autoreId: number;
+  statoPrecedente?: StatoIssue; // presente solo per eventi di cambio-stato
+}
 
 /**
- * Interfaccia Observer
- * ConcreteObserver: CronologiaObserver.
+ * Interfaccia Observer (Lecture 19A, Design Patterns — Observer, Behavioral).
+ * ConcreteObserver: CronologiaObserver, NotificationObserver.
  */
-
 export interface ObserverCronologia {
-  aggiorna(issue: Issue, descrizione: string, autoreId: number): Promise<void>;
+  aggiorna(evento: EventoIssue): Promise<void>;
 }
