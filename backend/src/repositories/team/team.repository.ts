@@ -36,4 +36,9 @@ export class TeamRepository {
   async rimuoviMembro(teamId: number, utenteId: number): Promise<void> {
     await MembroTeam.destroy({ where: { teamId, utenteId } });
   }
+
+  async isMembro(teamId: number, utenteId: number): Promise<boolean> {
+    const riga = await MembroTeam.findOne({ where: { teamId, utenteId } });
+    return riga !== null;
+  }
 }

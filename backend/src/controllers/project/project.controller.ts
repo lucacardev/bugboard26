@@ -7,31 +7,28 @@ export class ProgettoController {
   constructor(private progettoService: ProgettoService) {}
 
   creaProgetto = async (req: Request, res: Response): Promise<void> => {
-    const { nome, descrizione, creatoDa, nomeTeam } = req.body;
+    const { nome, descrizione, nomeTeam } = req.body;
 
-    if (!nome || !creatoDa || !nomeTeam) {
-      res.status(400).json({
-        errore: {
-          codice: 'CAMPI_OBBLIGATORI_MANCANTI',
-          messaggio: 'Campi obbligatori mancanti: nome, creatoDa, nomeTeam',
-        },
-      });
-      return;
+    if (!nome || !nomeTeam) {
+        res.status(400).json({
+        errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: nome, nomeTeam' },
+        });
+        return;
     }
 
     try {
-      const nuovoProgetto = await this.progettoService.creaProgetto({
+        const nuovoProgetto = await this.progettoService.creaProgetto({
         nome,
         descrizione,
-        creatoDa,
+        creatoDa: req.utente!.id,
         nomeTeam,
-      });
-      res.status(201).json(nuovoProgetto);
+        });
+        res.status(201).json(nuovoProgetto);
     } catch (errore) {
-      console.error('Errore durante la creazione del progetto:', errore);
-      res.status(500).json({
+        console.error('Errore durante la creazione del progetto:', errore);
+        res.status(500).json({
         errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante la creazione del progetto' },
-      });
+        });
     }
   };
 

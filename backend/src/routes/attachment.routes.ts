@@ -5,6 +5,7 @@ import { AttachmentController } from '../controllers/attachment/attachment.contr
 import { AttachmentService } from '../services/attachment/attachment.service';
 import { AttachmentRepository } from '../repositories/attachment/attachment.repository';
 import { S3Service } from '../services/s3/s3.service';
+import { autenticazione, soloAmministratore } from '../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -13,10 +14,10 @@ const s3Service = new S3Service();
 const attachmentService = new AttachmentService(attachmentRepository, s3Service);
 const attachmentController = new AttachmentController(attachmentService);
 
-router.post('/allegati/richiedi-upload', attachmentController.richiediUploadUrl);
-router.post('/allegati', attachmentController.confermaCaricamento);
-router.get('/issues/:issueId/allegati', attachmentController.getAllegatiIssue);
-router.get('/allegati/:id/download', attachmentController.richiediDownloadUrl);
-router.delete('/allegati/:id', attachmentController.eliminaAllegato);
+router.post('/allegati/richiedi-upload', autenticazione, attachmentController.richiediUploadUrl);
+router.post('/allegati', autenticazione, attachmentController.confermaCaricamento);
+router.get('/issues/:issueId/allegati', autenticazione, attachmentController.getAllegatiIssue);
+router.get('/allegati/:id/download', autenticazione, attachmentController.richiediDownloadUrl);
+router.delete('/allegati/:id', autenticazione, soloAmministratore, attachmentController.eliminaAllegato);
 
 export default router;

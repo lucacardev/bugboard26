@@ -2,33 +2,40 @@
 
 import { Request, Response } from 'express';
 import { LabelService } from '../../services/label/label.service';
+import { TeamRepository } from '../../repositories/team/team.repository';
 
 export class LabelController {
-  constructor(private labelService: LabelService) {}
+  constructor(private labelService: LabelService, private teamRepository: TeamRepository) {}
 
-    creaEtichetta = async (req: Request, res: Response): Promise<void> => {
-    // TODO(autorizzazione): punto 10 traccia — solo un membro del team del
-    // progetto (progettoId nel body) può creare etichette, non un utente
-    // qualsiasi. Controllo da aggiungere qui una volta integrato Cognito:
-    // verificare che req.utente sia membro del Team associato a progettoId
-    // (query verso TeamRepository/UserRepository per il match).
+  creaEtichetta = async (req: Request, res: Response): Promise<void> => {
     const { testo, colore, progettoId } = req.body;
     if (!testo || !colore || !progettoId) {
-        res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: testo, colore, progettoId' } });
-        return;
+      res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: testo, colore, progettoId' } });
+      return;
     }
     try {
-        const nuovaEtichetta = await this.labelService.creaEtichetta({ testo, colore, progettoId });
-        res.status(201).json(nuovaEtichetta);
+      // Punto 10 traccia: creabile da qualunque Membro team del progetto
+      // (l'Amministratore ha comunque accesso completo).
+      if (req.utente!.ruolo !== 'amministratore') {
+        const team = await this.teamRepository.findByProgettoId(Number(progettoId));
+        const membro = team ? await this.teamRepository.isMembro(team.id, req.utente!.id) : false;
+        if (!membro) {
+          res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Solo un membro del team di questo progetto può creare etichette' } });
+          return;
+        }
+      }
+
+      const nuovaEtichetta = await this.labelService.creaEtichetta({ testo, colore, progettoId });
+      res.status(201).json(nuovaEtichetta);
     } catch (errore) {
-        if (errore instanceof Error && errore.message === 'ETICHETTA_GIA_ESISTENTE') {
+      if (errore instanceof Error && errore.message === 'ETICHETTA_GIA_ESISTENTE') {
         res.status(409).json({ errore: { codice: 'ETICHETTA_GIA_ESISTENTE', messaggio: 'Un\'etichetta con questo testo esiste già in questo progetto' } });
         return;
-        }
-        console.error('Errore durante la creazione dell\'etichetta:', errore);
-        res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante la creazione dell\'etichetta' } });
+      }
+      console.error('Errore durante la creazione dell\'etichetta:', errore);
+      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante la creazione dell\'etichetta' } });
     }
-    };
+  };
 
   getEtichetteProgetto = async (req: Request, res: Response): Promise<void> => {
     try {
