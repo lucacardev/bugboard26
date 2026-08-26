@@ -74,31 +74,32 @@ export class IssueController {
    * interpretazione già consolidata). Richiede una lettura preliminare per
    * conoscere l'assegnatario reale prima di autorizzare la scrittura.
    */
+
   cambiaStato = async (req: Request, res: Response): Promise<void> => {
     const { stato } = req.body;
     if (!stato) {
-      res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campo obbligatorio mancante: stato' } });
-      return;
+        res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campo obbligatorio mancante: stato' } });
+        return;
     }
     try {
-      const id = Number(req.params.id);
-      const issueEsistente = await this.issueService.getIssue(id);
+        const id = Number(req.params.id);
+        const issueEsistente = await this.issueService.getIssue(id);
 
-      const autorizzato = req.utente!.ruolo === 'amministratore' || issueEsistente.assegnatarioId === req.utente!.id;
-      if (!autorizzato) {
+        const autorizzato = req.utente!.ruolo === 'amministratore' || issueEsistente.assegnatarioId === req.utente!.id;
+        if (!autorizzato) {
         res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Non sei l\'assegnatario di questa issue' } });
         return;
-      }
+        }
 
-      const issueAggiornata = await this.issueService.cambiaStato(id, stato as StatoIssue);
-      res.status(200).json(issueAggiornata);
+        const issueAggiornata = await this.issueService.cambiaStato(id, stato as StatoIssue, req.utente!.id);
+        res.status(200).json(issueAggiornata);
     } catch (errore) {
-      if (errore instanceof Error && errore.message === 'ISSUE_NON_TROVATA') {
+        if (errore instanceof Error && errore.message === 'ISSUE_NON_TROVATA') {
         res.status(404).json({ errore: { codice: 'ISSUE_NON_TROVATA', messaggio: 'Nessuna issue trovata con questo id' } });
         return;
-      }
-      console.error('Errore durante il cambio di stato della issue:', errore);
-      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante il cambio di stato della issue' } });
+        }
+        console.error('Errore durante il cambio di stato della issue:', errore);
+        res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante il cambio di stato della issue' } });
     }
   };
 
@@ -106,20 +107,21 @@ export class IssueController {
   assegnaIssue = async (req: Request, res: Response): Promise<void> => {
     const { assegnatarioId } = req.body;
     if (!assegnatarioId) {
-      res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campo obbligatorio mancante: assegnatarioId' } });
-      return;
+        res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campo obbligatorio mancante: assegnatarioId' } });
+        return;
     }
     try {
-      const id = Number(req.params.id);
-      const issueAggiornata = await this.issueService.assegnaA(id, Number(assegnatarioId));
-      res.status(200).json(issueAggiornata);
+        const id = Number(req.params.id);
+        const issueAggiornata = await this.issueService.assegnaA(id, Number(assegnatarioId), req.utente!.id);
+        res.status(200).json(issueAggiornata);
     } catch (errore) {
-      if (errore instanceof Error && errore.message === 'ISSUE_NON_TROVATA') {
+        if (errore instanceof Error && errore.message === 'ISSUE_NON_TROVATA') {
         res.status(404).json({ errore: { codice: 'ISSUE_NON_TROVATA', messaggio: 'Nessuna issue trovata con questo id' } });
         return;
-      }
-      console.error('Errore durante l\'assegnazione della issue:', errore);
-      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante l\'assegnazione della issue' } });
+        }
+        console.error('Errore durante l\'assegnazione della issue:', errore);
+        res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante l\'assegnazione della issue' } });
     }
   };
+
 }
