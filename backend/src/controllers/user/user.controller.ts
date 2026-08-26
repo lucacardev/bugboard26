@@ -33,21 +33,21 @@ export class UserController {
   };
 
   creaUtente = async (req: Request, res: Response): Promise<void> => {
-    const { cognitoSub, username, email, ruolo } = req.body;
-    if (!cognitoSub || !username || !email) {
-      res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: cognitoSub, nome, email' } });
-      return;
+    const { username, email, ruolo } = req.body;
+    if (!username || !email) {
+        res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: username, email' } });
+        return;
     }
     try {
-      const nuovoUtente = await this.userService.creaUtente({ cognitoSub, username, email, ruolo});
-      res.status(201).json(nuovoUtente);
+        const nuovoUtente = await this.userService.creaUtente({ username, email, ruolo });
+        res.status(201).json(nuovoUtente);
     } catch (errore) {
-      if (errore instanceof Error && errore.message === 'EMAIL_GIA_IN_USO') {
+        if (errore instanceof Error && errore.message === 'EMAIL_GIA_IN_USO') {
         res.status(409).json({ errore: { codice: 'EMAIL_GIA_IN_USO', messaggio: 'Questa email è già registrata' } });
         return;
-      }
-      console.error('Errore durante la creazione dell\'utente:', errore);
-      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante la creazione dell\'utente' } });
+        }
+        console.error('Errore durante la creazione dell\'utente:', errore);
+        res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante la creazione dell\'utente' } });
     }
   };
 }

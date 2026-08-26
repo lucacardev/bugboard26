@@ -28,6 +28,17 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
+
+  // ts-node non rispetta "include" per default: costruisce il Program
+  // seguendo solo il grafo degli import a partire dall'entry point.
+  // src/types/express.d.ts non viene mai importato da nessun file (è
+  // ambient, agisce sullo scope globale apposta), quindi senza questa
+  // opzione ts-node-dev non lo carica mai e il declaration merging su
+  // Express.Request non scatta in dev, pur compilando pulito con tsc.
+  "ts-node": {
+    "files": true
+  },
+
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

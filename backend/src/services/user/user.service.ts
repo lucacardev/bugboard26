@@ -1,17 +1,17 @@
 // services/user/user.service.ts
 
 import { UserRepository } from '../../repositories/user/user.repository';
+import { CognitoService } from './cognito.service';
 import { RuoloUtente, Utente } from '../../models/Utente';
 
 export interface DatiCreazioneUtente {
-  cognitoSub: string;
   username: string;
   email: string;
-  ruolo: RuoloUtente
+  ruolo: RuoloUtente;
 }
 
 export class UserService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(private userRepository: UserRepository, private cognitoService: CognitoService) {}
 
   async getUtente(id: number): Promise<Utente> {
     const utente = await this.userRepository.findById(id);
@@ -29,17 +29,10 @@ export class UserService {
     return this.userRepository.findByTeam(teamId);
   }
 
-  /**
-   * TODO: quando CognitoService sarà integrato, questo metodo dovrà:
-   * 1. Verificare che l'email non sia già in uso (this.userRepository.findByEmail)
-   * 2. Chiamare CognitoService.creaUtenteCognito(email) → AdminCreateUser,
-   *    che genera cognitoSub e invia la password temporanea
-   * 3. Solo allora persistere l'utente qui sotto con il cognitoSub reale
-   * Per ora richiede cognitoSub già pronto, per permettere test manuali.
-   */
   async creaUtente(dati: DatiCreazioneUtente): Promise<Utente> {
     const esistente = await this.userRepository.findByEmail(dati.email);
     if (esistente) throw new Error('EMAIL_GIA_IN_USO');
-    return this.userRepository.create(dati);
+    const cognitoSub = await this.cognitoService.creaUtenteCognito(dati.email);
+    return this.userRepository.create({ cognitoSub, username: dati.username, email: dati.email, ruolo: dati.ruolo });
   }
 }

@@ -4,15 +4,18 @@ import { Router } from 'express';
 import { UserController } from '../controllers/user/user.controller';
 import { UserService } from '../services/user/user.service';
 import { UserRepository } from '../repositories/user/user.repository';
+import { CognitoService } from '../services/user/cognito.service';
+import { autenticazione, soloAmministratore } from '../middlewares/auth.middleware';
 
 const router = Router();
 
 const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
+const cognitoService = new CognitoService();
+const userService = new UserService(userRepository, cognitoService);
 const userController = new UserController(userService);
 
-router.post('/utenti', userController.creaUtente);
-router.get('/utenti/:id', userController.getUtente);
-router.get('/teams/:teamId/utenti', userController.getMembriTeam);
+router.post('/utenti', autenticazione, soloAmministratore, userController.creaUtente);
+router.get('/utenti/:id', autenticazione, userController.getUtente);
+router.get('/teams/:teamId/utenti', autenticazione, userController.getMembriTeam);
 
 export default router;
