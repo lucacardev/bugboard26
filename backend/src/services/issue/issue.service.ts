@@ -1,4 +1,4 @@
-import { Issue, TipoIssue } from '../../models/Issue';
+import { Issue, TipoIssue, StatoIssue } from '../../models/Issue';
 import { IssueFactory, DatiCreazioneIssue } from './issue.factory';
 import { IssueRepository, FiltriIssue } from '../../repositories/issue/issue.repository';
 
@@ -20,5 +20,19 @@ export class IssueService {
       throw new Error('ISSUE_NON_TROVATA');
     }
     return issue;
+  }
+
+  /** Punto 6/9 traccia: il metodo di dominio esisteva già su Issue, mancava solo l'orchestrazione. */
+  async cambiaStato(id: number, nuovoStato: StatoIssue): Promise<Issue> {
+    const issue = await this.getIssue(id);
+    issue.cambiaStato(nuovoStato);
+    return this.issueRepository.save(issue);
+  }
+
+  /** Punto 4 traccia: assegnazione, riservata all'Amministratore (autorizzazione nel Controller). */
+  async assegnaA(id: number, utenteId: number): Promise<Issue> {
+    const issue = await this.getIssue(id);
+    issue.assegnaA(utenteId);
+    return this.issueRepository.save(issue);
   }
 }
