@@ -10,7 +10,7 @@ export interface DatiCreazioneEtichetta {
 }
 
 export class LabelService {
-  constructor(private labelRepository: LabelRepository) {}
+  constructor(private readonly labelRepository: LabelRepository) {}
 
   async creaEtichetta(dati: DatiCreazioneEtichetta): Promise<Etichetta> {
     const esistente = await this.labelRepository.findByTestoProgetto(dati.progettoId, dati.testo);

@@ -34,10 +34,16 @@ import './models/IssueEtichetta';
 
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const corsOrigin = process.env.CORS_ORIGIN;
+if (!corsOrigin) {
+  throw new Error('CORS_ORIGIN non impostata in .env');
+}
 
-app.use(cors());
+const app = express();
+app.disable('x-powered-by');
+const PORT = process.env.PORT || 3000;
+app.use(cors({ origin: corsOrigin }));
+
 app.use(express.json());
 
 app.use('/api', issueRoutes);

@@ -14,8 +14,8 @@ export interface DatiCreazioneProgetto {
 
 export class ProgettoService {
   constructor(
-    private progettoRepository: ProgettoRepository,
-    private teamRepository: TeamRepository
+    private readonly progettoRepository: ProgettoRepository,
+    private readonly teamRepository: TeamRepository
   ) {}
 
   async creaProgetto(dati: DatiCreazioneProgetto): Promise<Progetto> {

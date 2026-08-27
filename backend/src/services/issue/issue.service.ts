@@ -8,7 +8,7 @@ import { ObserverCronologia, EventoIssue } from '../cronologia/observer-cronolog
 export class IssueService {
   private observers: ObserverCronologia[] = [];
 
-  constructor(private issueRepository: IssueRepository) {}
+  constructor(private readonly issueRepository: IssueRepository) {}
 
   attach(observer: ObserverCronologia): void {
     this.observers.push(observer);

@@ -7,7 +7,7 @@ const TIPI_MIME_CONSENTITI = ['image/png', 'image/jpeg', 'image/gif', 'image/web
 const DIMENSIONE_MASSIMA_BYTES = 10 * 1024 * 1024; // 10 MB
 
 export class AttachmentController {
-  constructor(private attachmentService: AttachmentService) {}
+  constructor(private readonly attachmentService: AttachmentService) {}
 
   richiediUploadUrl = async (req: Request, res: Response): Promise<void> => {
     const { issueId, nomeFile, tipoMime } = req.body;

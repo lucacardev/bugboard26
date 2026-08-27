@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { ProgettoService } from '../../services/project/project.service';
 
 export class ProgettoController {
-  constructor(private progettoService: ProgettoService) {}
+  constructor(private readonly progettoService: ProgettoService) {}
 
   creaProgetto = async (req: Request, res: Response): Promise<void> => {
     const { nome, descrizione, nomeTeam } = req.body;

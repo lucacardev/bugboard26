@@ -5,7 +5,7 @@ import { LabelService } from '../../services/label/label.service';
 import { TeamRepository } from '../../repositories/team/team.repository';
 
 export class LabelController {
-  constructor(private labelService: LabelService, private teamRepository: TeamRepository) {}
+  constructor(private readonly labelService: LabelService, private readonly teamRepository: TeamRepository) {}
 
   creaEtichetta = async (req: Request, res: Response): Promise<void> => {
     const { testo, colore, progettoId } = req.body;

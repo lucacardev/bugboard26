@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { NotificationService } from '../../services/notification/notification.service';
 
 export class NotificationController {
-  constructor(private notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) {}
 
   getNotificheUtente = async (req: Request, res: Response): Promise<void> => {
     try {

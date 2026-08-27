@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { TeamService } from '../../services/team/team.service';
 
 export class TeamController {
-  constructor(private teamService: TeamService) {}
+  constructor(private readonly teamService: TeamService) {}
 
   getTeam = async (req: Request, res: Response): Promise<void> => {
     try {

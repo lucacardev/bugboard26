@@ -4,7 +4,7 @@ import { NotificationRepository } from '../../repositories/notification/notifica
 import { Notifica } from '../../models/Notifica';
 
 export class NotificationService {
-  constructor(private notificationRepository: NotificationRepository) {}
+  constructor(private readonly notificationRepository: NotificationRepository) {}
 
   async registraNotifica(utenteId: number, messaggio: string, issueId?: number): Promise<Notifica> {
     return this.notificationRepository.create({ utenteId, messaggio, issueId: issueId ?? null });

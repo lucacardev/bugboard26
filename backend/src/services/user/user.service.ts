@@ -11,7 +11,7 @@ export interface DatiCreazioneUtente {
 }
 
 export class UserService {
-  constructor(private userRepository: UserRepository, private cognitoService: CognitoService) {}
+  constructor(private readonly userRepository: UserRepository, private readonly cognitoService: CognitoService) {}
 
   async getUtente(id: number): Promise<Utente> {
     const utente = await this.userRepository.findById(id);

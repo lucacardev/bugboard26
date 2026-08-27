@@ -10,7 +10,7 @@ export interface DatiScritturaCommento {
 }
 
 export class CommentoService {
-  constructor(private commentoRepository: CommentoRepository) {}
+  constructor(private readonly commentoRepository: CommentoRepository) {}
 
   async scriviCommento(dati: DatiScritturaCommento): Promise<Commento> {
     return this.commentoRepository.create(dati);

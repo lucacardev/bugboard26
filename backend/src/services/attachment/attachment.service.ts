@@ -1,6 +1,6 @@
 // services/attachment/attachment.service.ts
 
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { AttachmentRepository } from '../../repositories/attachment/attachment.repository';
 import { S3Service } from '../s3/s3.service';
 import { Allegato } from '../../models/Allegato';
@@ -24,8 +24,8 @@ export interface ConfermaCaricamentoAllegato {
 
 export class AttachmentService {
   constructor(
-    private attachmentRepository: AttachmentRepository,
-    private s3Service: S3Service
+    private readonly attachmentRepository: AttachmentRepository,
+    private readonly s3Service: S3Service
   ) {}
 
   async richiediUploadUrl(dati: RichiestaUploadAllegato): Promise<RispostaUploadAllegato> {

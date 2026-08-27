@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { UserService } from '../../services/user/user.service';
 
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   getUtente = async (req: Request, res: Response): Promise<void> => {
     try {

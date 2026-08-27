@@ -3,7 +3,7 @@ import { IssueService } from '../../services/issue/issue.service';
 import { TipoIssue, StatoIssue } from '../../models/Issue';
 
 export class IssueController {
-  constructor(private issueService: IssueService) {}
+  constructor(private readonly issueService: IssueService) {}
 
   segnalaIssue = async (req: Request, res: Response): Promise<void> => {
     const { tipo, titolo, descrizione, priorita, dataInizio, dataScadenza, progettoId, assegnatarioId } = req.body;

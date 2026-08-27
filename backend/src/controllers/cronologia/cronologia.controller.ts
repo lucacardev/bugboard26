@@ -7,9 +7,9 @@ import { TeamRepository } from '../../repositories/team/team.repository';
 
 export class CronologiaController {
   constructor(
-    private cronologiaService: CronologiaService,
-    private issueRepository: IssueRepository,
-    private teamRepository: TeamRepository
+    private readonly cronologiaService: CronologiaService,
+    private readonly issueRepository: IssueRepository,
+    private readonly teamRepository: TeamRepository
   ) {}
 
   /** Decisione già presa: "Visualizzare cronologia issue" → Membro team (non Utente autenticato generico). */

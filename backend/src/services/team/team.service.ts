@@ -1,12 +1,11 @@
 // services/team/team.service.ts
 
-import { Transaction } from 'sequelize';
 import { TeamRepository } from '../../repositories/team/team.repository';
 import { Team } from '../../models/Team';
 import { Utente } from '../../models/Utente';
 
 export class TeamService {
-  constructor(private teamRepository: TeamRepository) {}
+  constructor(private readonly teamRepository: TeamRepository) {}
 
   async getTeam(id: number): Promise<Team> {
     const team = await this.teamRepository.findById(id);

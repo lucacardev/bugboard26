@@ -4,7 +4,7 @@ import { CronologiaRepository } from '../../repositories/cronologia/cronologia.r
 import { VoceCronologia } from '../../models/VoceCronologia';
 
 export class CronologiaService {
-  constructor(private cronologiaRepository: CronologiaRepository) {}
+  constructor(private readonly cronologiaRepository: CronologiaRepository) {}
 
   async registraEvento(issueId: number, descrizione: string, autoreId: number): Promise<VoceCronologia> {
     return this.cronologiaRepository.create({ issueId, descrizione, autoreId });

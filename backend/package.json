@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "dev": "ts-node-dev --files src/index.ts"
+    "dev": "ts-node-dev --files src/index.ts",
+    "build" : "tsc",
+    "sonar" : "npm test -- --coverage && powershell -ExecutionPolicy Bypass -File scripts/sonar-scan.ps1"
   },
   "keywords": [],
   "author": "",

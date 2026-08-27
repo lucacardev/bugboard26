@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { CognitoService } from '../../services/user/cognito.service';
 
 export class AuthController {
-  constructor(private cognitoService: CognitoService) {}
+  constructor(private readonly cognitoService: CognitoService) {}
 
   login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;

@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { CommentoService } from '../../services/comment/comment.service';
 
 export class CommentoController {
-  constructor(private commentoService: CommentoService) {}
+  constructor(private readonly commentoService: CommentoService) {}
 
   scriviCommento = async (req: Request, res: Response): Promise<void> => {
     const { testo, issueId, autoreId } = req.body;
