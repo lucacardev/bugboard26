@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 
 import { sequelize } from './config/database';
 import { definisciAssociazioni } from './models/associations';
+import { verificaCsrf } from './middlewares/csrf.middleware';
 
 import issueRoutes from './routes/issue.routes';
 import progettoRoutes from './routes/project.routes';
@@ -48,6 +49,8 @@ app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(cookieParser());
 
 app.use(express.json());
+
+app.use(verificaCsrf); // dopo json/cookieParser, prima di qualunque rotta
 
 app.use('/api', issueRoutes);
 app.use('/api', progettoRoutes);
