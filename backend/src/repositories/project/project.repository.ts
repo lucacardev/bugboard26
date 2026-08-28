@@ -12,6 +12,10 @@ export class ProgettoRepository {
     });
   }
 
+  async findAll() {
+    return Progetto.findAll();
+  }
+
   async findByUtente(utenteId: number): Promise<Progetto[]> {
     return Progetto.findAll({
         include: [

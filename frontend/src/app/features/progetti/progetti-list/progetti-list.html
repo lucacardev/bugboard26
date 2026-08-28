@@ -1,5 +1,30 @@
-<div style="padding: 24px;">
-  <h1>Bentornato, {{ auth.currentUser()?.username }}</h1>
-  <p>Ruolo: {{ auth.currentUser()?.ruolo }}</p>
-  <button (click)="auth.logout()">Esci</button>
+<div class="pagina">
+
+  <main class="contenuto">
+    <h1 class="titolo-pagina">I tuoi progetti</h1>
+
+    @if (caricamento()) {
+      <p class="stato-testo">Caricamento...</p>
+    } @else if (progetti().length === 0) {
+      <p class="stato-testo">Nessun progetto disponibile.</p>
+    } @else {
+      <div class="griglia-progetti">
+        @for (progetto of progetti(); track progetto.id) {
+          <button class="card-progetto" (click)="apriProgetto(progetto)">
+            <span class="card-nome">{{ progetto.nome }}</span>
+            @if (progetto.descrizione) {
+              <span class="card-descrizione">{{ progetto.descrizione }}</span>
+            }
+          </button>
+        }
+
+        @if (isAdmin) {
+          <button class="card-progetto card-nuovo">
+            <span class="card-nuovo-icona">+</span>
+            <span class="card-nome">Crea nuovo progetto</span>
+          </button>
+        }
+      </div>
+    }
+  </main>
 </div>

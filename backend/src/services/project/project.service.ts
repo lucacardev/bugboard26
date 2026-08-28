@@ -64,4 +64,8 @@ export class ProgettoService {
   async getProgettiUtente(utenteId: number): Promise<Progetto[]> {
     return this.progettoRepository.findByUtente(utenteId);
   }
+
+  async getTuttiIProgetti(): Promise<Progetto[]> {
+    return this.progettoRepository.findAll();
+  }
 }

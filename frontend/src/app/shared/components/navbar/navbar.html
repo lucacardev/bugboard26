@@ -1,0 +1,9 @@
+<header class="header">
+  <div class="header-titolo">
+    <img src="logo.png" alt="BugBoard26" class="header-logo">
+  </div>
+  <div class="header-utente">
+    <span>{{ auth.currentUser()?.username }}</span>
+    <button class="bottone-esci" (click)="auth.logout()">Esci</button>
+  </div>
+</header>

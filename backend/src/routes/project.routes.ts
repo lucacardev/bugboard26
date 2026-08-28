@@ -19,5 +19,6 @@ router.get('/progetti/:id', autenticazione, progettoController.getProgetto);
 router.get('/utenti/:utenteId/progetti', autenticazione, progettoController.getProgettiUtente);
 router.patch('/progetti/:id/nome', autenticazione, soloAmministratore, progettoController.modificaNome);
 router.patch('/progetti/:id/descrizione', autenticazione, soloAmministratore, progettoController.modificaDescrizione);
+router.get('/progetti', autenticazione, soloAmministratore, progettoController.getTuttiIProgetti);
 
 export default router;

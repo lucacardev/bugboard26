@@ -64,6 +64,16 @@ export class ProgettoController {
     }
   };
 
+  getTuttiIProgetti = async (req: Request, res: Response): Promise<void> => {
+    try {
+    const progetti = await this.progettoService.getTuttiIProgetti();
+    res.status(200).json(progetti);
+    } catch (errore) {
+    console.error('Errore durante il recupero dei progetti:', errore);
+    res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante il recupero dei progetti' } });
+    }
+  };
+
   modificaNome = async (req: Request, res: Response): Promise<void> => {
     const { nome } = req.body;
 
