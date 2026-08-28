@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{ data.titolo }}</h2>
+<mat-dialog-content>
+  <app-issue-form
+    [editableFields]="data.editableFields ?? ['titolo','descrizione','tipo','priorita','dataInizio','dataScadenza']"
+    [valoriIniziali]="data.valoriIniziali ?? {}"
+    [testoBottone]="data.testoBottone"
+    (salva)="onSalva($event)"
+    (annulla)="onAnnulla()">
+  </app-issue-form>
+</mat-dialog-content>

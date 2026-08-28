@@ -1,0 +1,5 @@
+<div class="pagina">
+  <button class="link-torna" (click)="annulla()">&larr; Torna alle issue</button>
+  <h1 class="titolo-pagina">Nuova issue</h1>
+  <app-issue-form testoBottone="Crea issue" (salva)="creaIssue($event)" (annulla)="annulla()"></app-issue-form>
+</div>

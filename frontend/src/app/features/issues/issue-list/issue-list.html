@@ -1,0 +1,110 @@
+<div class="pagina">
+  <button class="link-torna" (click)="torna()">&larr; I tuoi progetti</button>
+
+  <div class="intestazione">
+    <h1 class="titolo-pagina">{{ progetto()?.nome || 'Caricamento...' }}</h1>
+    <button class="bottone-nuova" (click)="nuovaIssue()">+ Nuova issue</button>
+  </div>
+
+  <div class="tab-vista">
+    <button class="tab" [class.attivo]="vista() === 'elenco'" (click)="vista.set('elenco')">Elenco</button>
+    <button class="tab" [class.attivo]="vista() === 'board'" (click)="vista.set('board')">Board</button>
+  </div>
+
+  <div class="filtri">
+    <select [(ngModel)]="filtroTipo" (ngModelChange)="caricaIssue()">
+      <option value="">Tutti i tipi</option>
+      <option value="bug">Bug</option>
+      <option value="question">Question</option>
+      <option value="documentation">Documentation</option>
+      <option value="feature">Feature</option>
+    </select>
+
+    @if (vista() === 'elenco') {
+      <select [(ngModel)]="filtroStato" (ngModelChange)="caricaIssue()">
+        <option value="">Tutti gli stati</option>
+        <option value="todo">Todo</option>
+        <option value="in_progress">In corso</option>
+        <option value="done">Completate</option>
+      </select>
+    }
+  </div>
+
+  @if (caricamento()) {
+    <p class="stato-testo">Caricamento...</p>
+  } @else if (issue().length === 0) {
+    <p class="stato-testo">Nessuna issue trovata.</p>
+  } @else if (vista() === 'elenco') {
+    <table class="tabella-issue">
+      <thead>
+        <tr>
+          <th>Titolo</th>
+          <th>Tipo</th>
+          <th>Stato</th>
+          <th>Priorità</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of issuePaginate(); track item.id) {
+          <tr (click)="apriIssue(item)">
+            <td>{{ item.titolo }}</td>
+            <td><span class="badge badge-tipo">{{ item.tipo }}</span></td>
+            <td><span class="badge badge-stato-{{ item.stato }}">{{ item.stato.replace('_', ' ') }}</span></td>
+            <td>{{ item.priorita || '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <app-paginator
+      [paginaCorrente]="paginaCorrente()"
+      [totalePagine]="totalePagine()"
+      (cambiaPagina)="paginaCorrente.set($event)">
+    </app-paginator>
+  }
+
+  @if (vista() === 'board') {
+    <div class="board">
+      @for (colonna of colonne; track colonna.stato) {
+        <div class="colonna-board">
+          <h3 class="colonna-titolo">{{ colonna.titolo }} <span class="colonna-conteggio">{{ colonna.dati().length }}</span></h3>
+
+          <div
+            class="drop-zone"
+            cdkDropList
+            [cdkDropListData]="colonna.dati()"
+            [cdkDropListConnectedTo]="colonneBoardId"
+            id="lista-{{ colonna.stato }}"
+            (cdkDropListDropped)="drop($event, colonna.stato)">
+            @for (item of colonna.dati(); track item.id) {
+              <div class="card-issue" cdkDrag (click)="apriIssue(item)">
+                <span class="card-issue-titolo">{{ item.titolo }}</span>
+                <span class="badge badge-tipo">{{ item.tipo }}</span>
+              </div>
+            }
+          </div>
+
+          @if (colonna.stato === 'todo') {
+            @if (colonnaCreazioneAttiva === 'todo') {
+              <div class="creazione-inline">
+                <input
+                  class="creazione-input"
+                  type="text"
+                  [(ngModel)]="titoloNuovaIssue"
+                  placeholder="Che cosa occorre fare?"
+                  (keydown.enter)="confermaCreazioneInline()"
+                  (keydown.escape)="annullaCreazioneInline()">
+                <div class="creazione-azioni">
+                  <button class="bottone-conferma" (click)="confermaCreazioneInline()">Crea</button>
+                  <button class="bottone-annulla-inline" (click)="annullaCreazioneInline()">Annulla</button>
+                </div>
+              </div>
+            } @else {
+              <button class="bottone-crea-colonna" (click)="apriCreazioneInline()">+ Crea</button>
+            }
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

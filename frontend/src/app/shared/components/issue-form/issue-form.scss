@@ -1,0 +1,78 @@
+.issue-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+}
+
+.campo-label {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.campo-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #ffffff;
+
+  &:focus {
+    outline: none;
+    border-color: var(--colore-primario-chiaro);
+    border-width: 2px;
+    padding: 9px 11px;
+  }
+}
+
+.campo-textarea {
+  resize: vertical;
+}
+
+.campo-riga {
+  display: flex;
+  gap: 16px;
+}
+
+.campo-colonna {
+  flex: 1;
+}
+
+.azioni {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.bottone-salva {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background: var(--colore-primario-chiaro);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--colore-primario);
+  }
+}
+
+.bottone-annulla {
+  padding: 10px 20px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  background: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}

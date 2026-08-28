@@ -17,4 +17,8 @@ export class ProgettoService {
   getProgettiUtente(utenteId: number) {
     return this.http.get<Progetto[]>(`${environment.apiUrl}/utenti/${utenteId}/progetti`, { withCredentials: true });
   }
+
+  getProgetto(id: number) {
+    return this.http.get<Progetto>(`${this.apiUrl}/${id}`, { withCredentials: true });
+  }
 }

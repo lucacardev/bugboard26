@@ -1,0 +1,51 @@
+<form class="issue-form" (ngSubmit)="onSalva()">
+  @if (campoEditabile('tipo')) {
+    <label class="campo-label">Tipo</label>
+    <select class="campo-input" [(ngModel)]="dati.tipo" name="tipo">
+      <option value="bug">Bug</option>
+      <option value="question">Question</option>
+      <option value="documentation">Documentation</option>
+      <option value="feature">Feature</option>
+    </select>
+  }
+
+  @if (campoEditabile('titolo')) {
+    <label class="campo-label">Titolo *</label>
+    <input class="campo-input" type="text" [(ngModel)]="dati.titolo" name="titolo" placeholder="Titolo della issue" required>
+  }
+
+  @if (campoEditabile('descrizione')) {
+    <label class="campo-label">Descrizione</label>
+    <textarea class="campo-input campo-textarea" [(ngModel)]="dati.descrizione" name="descrizione" rows="4" placeholder="Descrizione (opzionale)"></textarea>
+  }
+
+  @if (campoEditabile('priorita')) {
+    <label class="campo-label">Priorità</label>
+    <select class="campo-input" [(ngModel)]="dati.priorita" name="priorita">
+      <option value="">Nessuna</option>
+      <option value="bassa">Bassa</option>
+      <option value="media">Media</option>
+      <option value="alta">Alta</option>
+    </select>
+  }
+
+  <div class="campo-riga">
+    @if (campoEditabile('dataInizio')) {
+      <div class="campo-colonna">
+        <label class="campo-label">Data inizio</label>
+        <input class="campo-input" type="date" [(ngModel)]="dati.dataInizio" name="dataInizio">
+      </div>
+    }
+    @if (campoEditabile('dataScadenza')) {
+      <div class="campo-colonna">
+        <label class="campo-label">Data scadenza</label>
+        <input class="campo-input" type="date" [(ngModel)]="dati.dataScadenza" name="dataScadenza">
+      </div>
+    }
+  </div>
+
+  <div class="azioni">
+    <button type="button" class="bottone-annulla" (click)="annulla.emit()">Annulla</button>
+    <button type="submit" class="bottone-salva">{{ testoBottone() }}</button>
+  </div>
+</form>

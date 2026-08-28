@@ -1,0 +1,26 @@
+.pagina {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 48px) clamp(16px, 4vw, 32px);
+}
+
+.link-torna {
+  border: none;
+  background: none;
+  color: var(--colore-primario-chiaro);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.titolo-pagina {
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 700;
+  margin: 0 0 24px;
+  color: rgba(0, 0, 0, 0.87);
+}

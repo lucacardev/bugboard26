@@ -27,6 +27,15 @@ export const routes: Routes = [
         path: 'progetti',
         loadComponent: () => import('./features/progetti/progetti-list/progetti-list').then((m) => m.ProgettiList),
       },
+      {
+        path: 'progetti/:progettoId/issues',
+        loadComponent: () => import('./features/issues/issue-list/issue-list').then((m) => m.IssueList),
+      },
     ],
+  },
+
+  {
+    path: 'progetti/:progettoId/issues/nuova',
+    loadComponent: () => import('./features/issues/issue-nuova/issue-nuova').then((m) => m.IssueNuova),
   },
 ];

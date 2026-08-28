@@ -1,0 +1,24 @@
+<aside class="sidebar" [class.aperta]="layout.sidebarAperta()">
+  <nav class="nav">
+    <a routerLink="/progetti" routerLinkActive="attivo" class="nav-item" (click)="layout.chiudiSidebar()">
+      <mat-icon>folder_open</mat-icon>
+      <span>Progetti</span>
+    </a>
+    <a routerLink="/notifiche" routerLinkActive="attivo" class="nav-item" (click)="layout.chiudiSidebar()">
+      <mat-icon>notifications</mat-icon>
+      <span>Notifiche</span>
+    </a>
+
+    @if (isAdmin) {
+      <div class="nav-separatore">Amministrazione</div>
+      <a routerLink="/team" routerLinkActive="attivo" class="nav-item" (click)="layout.chiudiSidebar()">
+        <mat-icon>group</mat-icon>
+        <span>Team</span>
+      </a>
+    }
+  </nav>
+</aside>
+
+@if (layout.sidebarAperta()) {
+  <div class="overlay" (click)="layout.chiudiSidebar()"></div>
+}

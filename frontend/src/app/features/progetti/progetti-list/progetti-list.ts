@@ -1,12 +1,13 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
 import { ProgettoService } from '../../../core/services/progetto';
 import { Progetto } from '../../../core/models/progetto.model';
+import { Paginator } from '../../../shared/components/paginator/paginator';
 
 @Component({
   selector: 'app-progetti-list',
-  imports: [],
+  imports: [Paginator],
   templateUrl: './progetti-list.html',
   styleUrl: './progetti-list.scss',
 })
@@ -17,6 +18,16 @@ export class ProgettiList implements OnInit {
   auth = inject(AuthService);
   progetti = signal<Progetto[]>([]);
   caricamento = signal(true);
+
+  paginaCorrente = signal(1);
+  dimensionePagina = 9;
+
+  progettiPaginati = computed(() => {
+    const inizio = (this.paginaCorrente() - 1) * this.dimensionePagina;
+    return this.progetti().slice(inizio, inizio + this.dimensionePagina);
+  });
+
+  totalePagine = computed(() => Math.max(1, Math.ceil(this.progetti().length / this.dimensionePagina)));
 
   ngOnInit(): void {
     const utente = this.auth.currentUser();

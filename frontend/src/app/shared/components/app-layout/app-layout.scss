@@ -1,0 +1,9 @@
+.corpo {
+  display: flex;
+  min-height: calc(100vh - 57px);
+}
+
+.area-contenuto {
+  flex: 1;
+  min-width: 0;
+}

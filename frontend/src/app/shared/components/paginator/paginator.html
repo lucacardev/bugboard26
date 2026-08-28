@@ -1,0 +1,7 @@
+@if (totalePagine() > 1) {
+  <div class="paginatore">
+    <button class="pagina-bottone" (click)="vai(paginaCorrente() - 1)" [disabled]="paginaCorrente() === 1">&larr;</button>
+    <span class="pagina-testo">Pagina {{ paginaCorrente() }} di {{ totalePagine() }}</span>
+    <button class="pagina-bottone" (click)="vai(paginaCorrente() + 1)" [disabled]="paginaCorrente() === totalePagine()">&rarr;</button>
+  </div>
+}

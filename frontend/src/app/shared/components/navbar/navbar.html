@@ -1,6 +1,9 @@
 <header class="header">
   <div class="header-titolo">
-    <img src="logo.png" alt="BugBoard26" class="header-logo">
+    <button class="bottone-hamburger" (click)="layout.toggleSidebar()" aria-label="Apri menu">☰</button>
+    <a routerLink="/progetti" class="logo-link">
+      <img src="logo.png" alt="BugBoard26" class="header-logo">
+    </a>
   </div>
   <div class="header-utente">
     <span>{{ auth.currentUser()?.username }}</span>
