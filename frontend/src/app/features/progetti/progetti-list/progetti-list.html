@@ -1,0 +1,5 @@
+<div style="padding: 24px;">
+  <h1>Bentornato, {{ auth.currentUser()?.username }}</h1>
+  <p>Ruolo: {{ auth.currentUser()?.ruolo }}</p>
+  <button (click)="auth.logout()">Esci</button>
+</div>

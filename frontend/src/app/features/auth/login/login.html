@@ -1,0 +1,35 @@
+<div class="login-container">
+  <div class="login-form">
+    <div class="logo-row">
+      <img src="logo.png" alt="BugBoard26" class="logo">
+    </div>
+
+    <h1 class="titolo">Accedi per continuare</h1>
+
+    @if (messaggioErrore()) {
+      <p class="error-message">{{ messaggioErrore() }}</p>
+    }
+
+    <label class="campo-label" for="campo-email">Email</label>
+    <input
+      id="campo-email"
+      class="campo-input"
+      type="email"
+      [(ngModel)]="email"
+      placeholder="Inserisci il tuo indirizzo email"
+      (keydown.enter)="accedi()">
+
+    <label class="campo-label" for="campo-password">Password</label>
+    <input
+      id="campo-password"
+      class="campo-input"
+      type="password"
+      [(ngModel)]="password"
+      placeholder="Inserisci la tua password"
+      (keydown.enter)="accedi()">
+
+    <button class="bottone-accedi" (click)="accedi()" [disabled]="inCorso()">
+      @if (inCorso()) { Accesso in corso... } @else { Continua }
+    </button>
+  </div>
+</div>
