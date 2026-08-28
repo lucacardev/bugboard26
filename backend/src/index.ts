@@ -16,6 +16,7 @@ import authRoutes from './routes/auth.routes';
 import cronologiaRoutes from './routes/cronologia.routes';
 import notificationRoutes from './routes/notification.routes';
 import './services/notification/notification.worker'; // avvia il Worker BullMQ nello stesso processo
+import cookieParser from 'cookie-parser';
 
 import './models/Utente';
 import './models/Progetto';
@@ -42,7 +43,9 @@ if (!corsOrigin) {
 const app = express();
 app.disable('x-powered-by');
 const PORT = process.env.PORT || 3000;
-app.use(cors({ origin: corsOrigin }));
+
+app.use(cors({ origin: corsOrigin, credentials: true }));
+app.use(cookieParser());
 
 app.use(express.json());
 

@@ -13,13 +13,13 @@ const verifier = CognitoJwtVerifier.create({
 });
 
 export async function autenticazione(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const header = req.headers.authorization;
-  if (!header?.startsWith('Bearer ')) {
-    res.status(401).json({ errore: { codice: 'TOKEN_MANCANTE', messaggio: 'Header Authorization con Bearer token richiesto' } });
+  const token = req.cookies?.accessToken;
+
+  if (!token) {
+    res.status(401).json({ errore: { codice: 'TOKEN_MANCANTE', messaggio: 'Cookie di autenticazione mancante' } });
     return;
   }
 
-  const token = header.slice('Bearer '.length);
   try {
     const payload = await verifier.verify(token);
     const utente = await userRepository.findByCognitoSub(payload.sub);
