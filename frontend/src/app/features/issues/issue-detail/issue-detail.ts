@@ -8,11 +8,15 @@ import { ProgettoService } from '../../../core/services/progetto';
 import { TeamService } from '../../../core/services/team';
 import { CommentoService } from '../../../core/services/comment';
 import { CronologiaService } from '../../../core/services/cronologia';
+import { EtichettaService } from '../../../core/services/etichetta';
 import { Issue, StatoIssue } from '../../../core/models/issue.model';
 import { Progetto } from '../../../core/models/progetto.model';
 import { Utente } from '../../../core/models/utente.model';
 import { Commento } from '../../../core/models/commento.model';
 import { VoceCronologia } from '../../../core/models/cronologia.model';
+import { Etichetta } from '../../../core/models/etichetta.model';
+
+const COLORI_ETICHETTA = ['#3949ab', '#e65100', '#2e7d32', '#c62828', '#6a1b9a', '#00838f'];
 
 @Component({
   selector: 'app-issue-detail',
@@ -29,6 +33,7 @@ export class IssueDetail implements OnInit {
   private teamService = inject(TeamService);
   private commentoService = inject(CommentoService);
   private cronologiaService = inject(CronologiaService);
+  private etichettaService = inject(EtichettaService);
 
   progettoId = Number(this.route.snapshot.paramMap.get('progettoId'));
   issueId = Number(this.route.snapshot.paramMap.get('issueId'));
@@ -40,12 +45,18 @@ export class IssueDetail implements OnInit {
   cronologia = signal<VoceCronologia[]>([]);
   caricamento = signal(true);
 
+  etichetteIssue = signal<Etichetta[]>([]);
+  etichetteProgetto = signal<Etichetta[]>([]);
+  aggiuntaEtichettaAttiva = false;
+  testoNuovaEtichetta = '';
+
   nuovoCommento = '';
 
   ngOnInit(): void {
     this.caricaIssue();
     this.caricaCommenti();
     this.caricaCronologia();
+    this.caricaEtichetteIssue();
   }
 
   caricaIssue(): void {
@@ -57,6 +68,9 @@ export class IssueDetail implements OnInit {
             this.progetto.set(progetto);
             this.teamService.getMembri(progetto.teamId).subscribe({
               next: (membri) => this.membriTeam.set(membri),
+            });
+            this.etichettaService.getEtichetteProgetto(progetto.id).subscribe({
+              next: (etichette) => this.etichetteProgetto.set(etichette),
             });
             this.caricamento.set(false);
           },
@@ -78,6 +92,12 @@ export class IssueDetail implements OnInit {
     });
   }
 
+  caricaEtichetteIssue(): void {
+    this.etichettaService.getEtichetteIssue(this.issueId).subscribe({
+      next: (etichette) => this.etichetteIssue.set(etichette),
+    });
+  }
+
   get isAdmin(): boolean {
     return this.auth.currentUser()?.ruolo === 'amministratore';
   }
@@ -87,6 +107,12 @@ export class IssueDetail implements OnInit {
     const issueAttuale = this.issue();
     if (!utente || !issueAttuale) return false;
     return this.isAdmin || utente.id === issueAttuale.assegnatarioId;
+  }
+
+  // Etichette non ancora associate a questa issue, disponibili da aggiungere
+  get etichetteDisponibili(): Etichetta[] {
+    const idGiaAssociati = new Set(this.etichetteIssue().map((e) => e.id));
+    return this.etichetteProgetto().filter((e) => !idGiaAssociati.has(e.id));
   }
 
   cambiaStato(nuovoStato: StatoIssue): void {
@@ -118,6 +144,52 @@ export class IssueDetail implements OnInit {
         this.nuovoCommento = '';
         this.caricaCommenti();
       },
+    });
+  }
+
+  aggiungiEtichettaEsistente(etichettaId: string): void {
+    if (!etichettaId) return;
+    this.etichettaService.associaAIssue(this.issueId, Number(etichettaId)).subscribe({
+      next: () => this.caricaEtichetteIssue(),
+    });
+  }
+
+  apriCreazioneEtichetta(): void {
+    this.aggiuntaEtichettaAttiva = true;
+    this.testoNuovaEtichetta = '';
+  }
+
+  annullaCreazioneEtichetta(): void {
+    this.aggiuntaEtichettaAttiva = false;
+    this.testoNuovaEtichetta = '';
+  }
+
+  confermaCreazioneEtichetta(): void {
+    const testo = this.testoNuovaEtichetta.trim();
+    if (!testo) {
+      this.annullaCreazioneEtichetta();
+      return;
+    }
+
+    const colore = COLORI_ETICHETTA[Math.floor(Math.random() * COLORI_ETICHETTA.length)];
+
+    this.etichettaService.creaEtichetta(testo, colore, this.progettoId).subscribe({
+      next: (nuovaEtichetta) => {
+        this.etichetteProgetto.update((lista) => [...lista, nuovaEtichetta]);
+        this.etichettaService.associaAIssue(this.issueId, nuovaEtichetta.id).subscribe({
+          next: () => {
+            this.annullaCreazioneEtichetta();
+            this.caricaEtichetteIssue();
+          },
+        });
+      },
+      error: () => alert('Non sei autorizzato a creare etichette in questo progetto (devi essere membro del team)'),
+    });
+  }
+
+  rimuoviEtichetta(etichettaId: number): void {
+    this.etichettaService.rimuoviDaIssue(this.issueId, etichettaId).subscribe({
+      next: () => this.caricaEtichetteIssue(),
     });
   }
 

@@ -178,3 +178,93 @@
   font-size: 14px;
   color: rgba(0, 0, 0, 0.7);
 }
+
+.etichette-riga {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.etichetta-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 12px;
+  border-radius: 14px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.etichetta-rimuovi {
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.etichetta-aggiungi {
+  padding: 4px 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+  border-radius: 14px;
+  background: none;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.aggiunta-etichetta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.etichetta-select,
+.etichetta-input {
+  padding: 4px 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.etichetta-bottone {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 12px;
+  background: var(--colore-primario-chiaro);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--colore-primario);
+  }
+}
+
+.etichetta-bottone-annulla {
+  padding: 4px 12px;
+  border: none;
+  background: none;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+  cursor: pointer;
+}

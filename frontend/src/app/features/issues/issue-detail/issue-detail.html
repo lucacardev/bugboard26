@@ -12,6 +12,38 @@
           <p class="descrizione-issue">{{ issueAttuale.descrizione }}</p>
         }
 
+        <div class="etichette-riga">
+          @for (etichetta of etichetteIssue(); track etichetta.id) {
+            <span class="etichetta-pill" [style.background]="etichetta.colore">
+              {{ etichetta.testo }}
+              <button class="etichetta-rimuovi" (click)="rimuoviEtichetta(etichetta.id)">&times;</button>
+            </span>
+          }
+
+          @if (aggiuntaEtichettaAttiva) {
+            <div class="aggiunta-etichetta">
+              @if (etichetteDisponibili.length > 0) {
+                <select class="etichetta-select" (change)="aggiungiEtichettaEsistente($any($event.target).value)">
+                  <option value="" disabled selected>Etichetta esistente...</option>
+                  @for (etichetta of etichetteDisponibili; track etichetta.id) {
+                    <option [value]="etichetta.id">{{ etichetta.testo }}</option>
+                  }
+                </select>
+              }
+              <input
+                class="etichetta-input"
+                type="text"
+                [(ngModel)]="testoNuovaEtichetta"
+                placeholder="Nuova etichetta..."
+                (keydown.enter)="confermaCreazioneEtichetta()">
+              <button class="etichetta-bottone" (click)="confermaCreazioneEtichetta()">Crea</button>
+              <button class="etichetta-bottone-annulla" (click)="annullaCreazioneEtichetta()">Annulla</button>
+            </div>
+          } @else {
+            <button class="etichetta-aggiungi" (click)="apriCreazioneEtichetta()">+ Etichetta</button>
+          }
+        </div>
+
         <section class="sezione">
           <h2 class="sezione-titolo">Commenti</h2>
 
