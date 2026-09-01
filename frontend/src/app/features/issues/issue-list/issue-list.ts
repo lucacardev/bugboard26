@@ -1,7 +1,8 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { CdkDropList, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { IssueService } from '../../../core/services/issue';
 import { ProgettoService } from '../../../core/services/progetto';
@@ -19,7 +20,7 @@ interface ColonnaBoard {
 
 @Component({
   selector: 'app-issue-list',
-  imports: [FormsModule, CdkDropList, CdkDrag, Paginator],
+  imports: [FormsModule, CdkDropList, CdkDrag, Paginator, RouterLink, MatIconModule],
   templateUrl: './issue-list.html',
   styleUrl: './issue-list.scss',
 })

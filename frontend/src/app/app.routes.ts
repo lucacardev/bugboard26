@@ -41,4 +41,8 @@ export const routes: Routes = [
     path: 'progetti/:progettoId/issues/:issueId',
     loadComponent: () => import('./features/issues/issue-detail/issue-detail').then((m) => m.IssueDetail),
   },
+  {
+    path: 'team/:teamId',
+    loadComponent: () => import('./features/team/team-detail/team-detail').then((m) => m.TeamDetail),
+  },
 ];

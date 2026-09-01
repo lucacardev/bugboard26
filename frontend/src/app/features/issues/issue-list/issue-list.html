@@ -3,7 +3,18 @@
 
   <div class="intestazione">
     <h1 class="titolo-pagina">{{ progetto()?.nome || 'Caricamento...' }}</h1>
-    <button class="bottone-nuova" (click)="nuovaIssue()">+ Nuova issue</button>
+    <div class="azioni-intestazione">
+      @if (progetto(); as p) {
+        <button
+          class="bottone-team"
+          [routerLink]="['/team', p.teamId]"
+          [queryParams]="{ progettoId: progettoId }">
+          <mat-icon>group</mat-icon>
+          Team
+        </button>
+      }
+      <button class="bottone-nuova" (click)="nuovaIssue()">+ Nuova issue</button>
+    </div>
   </div>
 
   <div class="tab-vista">

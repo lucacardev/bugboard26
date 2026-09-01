@@ -1,0 +1,30 @@
+<div class="pagina">
+  <button class="link-torna" (click)="torna()">
+    &larr; {{ progettoIdOrigine ? 'Torna al progetto' : 'I tuoi progetti' }}
+  </button>
+  <h1 class="titolo-pagina">Membri del team</h1>
+  @if (caricamento()) {
+    <p class="stato-testo">Caricamento...</p>
+  } @else if (membri().length === 0) {
+    <p class="stato-testo">Nessun membro nel team.</p>
+  } @else {
+    <table class="tabella-membri">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Ruolo</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (membro of membri(); track membro.id) {
+          <tr>
+            <td>{{ membro.username }}</td>
+            <td>{{ membro.email }}</td>
+            <td><span class="badge badge-ruolo">{{ membro.ruolo }}</span></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

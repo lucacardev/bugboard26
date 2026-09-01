@@ -21,4 +21,8 @@ export class ProgettoService {
   getProgetto(id: number) {
     return this.http.get<Progetto>(`${this.apiUrl}/${id}`, { withCredentials: true });
   }
+
+  creaProgetto(nome: string, descrizione: string, nomeTeam: string) {
+    return this.http.post<Progetto>(this.apiUrl, { nome, descrizione, nomeTeam }, { withCredentials: true });
+  }
 }

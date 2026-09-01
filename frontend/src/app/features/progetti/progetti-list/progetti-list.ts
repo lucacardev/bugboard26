@@ -1,9 +1,11 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../../core/services/auth';
 import { ProgettoService } from '../../../core/services/progetto';
 import { Progetto } from '../../../core/models/progetto.model';
 import { Paginator } from '../../../shared/components/paginator/paginator';
+import { ProgettoFormDialog, DatiFormProgetto } from '../../../shared/components/progetto-form-dialog/progetto-form-dialog';
 
 @Component({
   selector: 'app-progetti-list',
@@ -14,6 +16,7 @@ import { Paginator } from '../../../shared/components/paginator/paginator';
 export class ProgettiList implements OnInit {
   private progettoService = inject(ProgettoService);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
 
   auth = inject(AuthService);
   progetti = signal<Progetto[]>([]);
@@ -30,6 +33,10 @@ export class ProgettiList implements OnInit {
   totalePagine = computed(() => Math.max(1, Math.ceil(this.progetti().length / this.dimensionePagina)));
 
   ngOnInit(): void {
+    this.caricaProgetti();
+  }
+
+  caricaProgetti(): void {
     const utente = this.auth.currentUser();
     const chiamata =
       utente?.ruolo === 'amministratore'
@@ -47,6 +54,21 @@ export class ProgettiList implements OnInit {
 
   apriProgetto(progetto: Progetto): void {
     this.router.navigate(['/progetti', progetto.id, 'issues']);
+  }
+
+  nuovoProgetto(): void {
+    const ref = this.dialog.open<ProgettoFormDialog, void, DatiFormProgetto>(ProgettoFormDialog, {
+      width: '450px',
+    });
+
+    ref.afterClosed().subscribe((dati) => {
+      if (dati) {
+        this.progettoService.creaProgetto(dati.nome, dati.descrizione, dati.nomeTeam).subscribe({
+          next: () => this.caricaProgetti(),
+          error: () => alert('Errore durante la creazione del progetto'),
+        });
+      }
+    });
   }
 
   get isAdmin(): boolean {

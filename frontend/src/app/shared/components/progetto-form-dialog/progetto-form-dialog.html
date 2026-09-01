@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>Nuovo progetto</h2>
+<mat-dialog-content>
+  <form class="progetto-form" (ngSubmit)="onSalva()">
+    <label class="campo-label">Nome progetto *</label>
+    <input class="campo-input" type="text" [(ngModel)]="dati.nome" name="nome" placeholder="Nome del progetto" required>
+
+    <label class="campo-label">Descrizione</label>
+    <textarea class="campo-input campo-textarea" [(ngModel)]="dati.descrizione" name="descrizione" rows="3" placeholder="Descrizione (opzionale)"></textarea>
+
+    <label class="campo-label">Nome team *</label>
+    <input class="campo-input" type="text" [(ngModel)]="dati.nomeTeam" name="nomeTeam" placeholder="Nome del team associato" required>
+
+    <div class="azioni">
+      <button type="button" class="bottone-annulla" (click)="onAnnulla()">Annulla</button>
+      <button type="submit" class="bottone-salva">Crea progetto</button>
+    </div>
+  </form>
+</mat-dialog-content>
