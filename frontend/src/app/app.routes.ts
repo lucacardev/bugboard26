@@ -33,9 +33,12 @@ export const routes: Routes = [
       },
     ],
   },
-
   {
     path: 'progetti/:progettoId/issues/nuova',
     loadComponent: () => import('./features/issues/issue-nuova/issue-nuova').then((m) => m.IssueNuova),
+  },
+  {
+    path: 'progetti/:progettoId/issues/:issueId',
+    loadComponent: () => import('./features/issues/issue-detail/issue-detail').then((m) => m.IssueDetail),
   },
 ];

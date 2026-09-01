@@ -1,0 +1,94 @@
+<div class="pagina">
+  <button class="link-torna" (click)="torna()">&larr; Torna alle issue</button>
+
+  @if (caricamento()) {
+    <p class="stato-testo">Caricamento...</p>
+  } @else if (issue(); as issueAttuale) {
+    <div class="layout-dettaglio">
+      <div class="colonna-principale">
+        <span class="badge badge-tipo">{{ issueAttuale.tipo }}</span>
+        <h1 class="titolo-issue">{{ issueAttuale.titolo }}</h1>
+        @if (issueAttuale.descrizione) {
+          <p class="descrizione-issue">{{ issueAttuale.descrizione }}</p>
+        }
+
+        <section class="sezione">
+          <h2 class="sezione-titolo">Commenti</h2>
+
+          <div class="lista-commenti">
+            @for (commento of commenti(); track commento.id) {
+              <div class="commento">
+                <p class="commento-testo">{{ commento.testo }}</p>
+                <span class="commento-data">{{ commento.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            } @empty {
+              <p class="stato-testo">Nessun commento.</p>
+            }
+          </div>
+
+          <div class="nuovo-commento">
+            <textarea
+              class="commento-input"
+              [(ngModel)]="nuovoCommento"
+              rows="2"
+              placeholder="Scrivi un commento...">
+            </textarea>
+            <button class="bottone-commento" (click)="inviaCommento()">Invia</button>
+          </div>
+        </section>
+
+        <section class="sezione">
+          <h2 class="sezione-titolo">Cronologia</h2>
+          <div class="lista-cronologia">
+            @for (voce of cronologia(); track voce.id) {
+              <div class="voce-cronologia">
+                <span class="voce-testo">{{ voce.descrizione }}</span>
+                <span class="voce-data">{{ nomeMembro(voce.autoreId) }} — {{ voce.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            } @empty {
+              <p class="stato-testo">Nessuna voce di cronologia.</p>
+            }
+          </div>
+        </section>
+      </div>
+
+      <aside class="colonna-laterale">
+        <div class="campo-laterale">
+          <label class="campo-laterale-label">Stato</label>
+          @if (puoModificareStato) {
+            <select class="campo-laterale-input" [ngModel]="issueAttuale.stato" (ngModelChange)="cambiaStato($event)">
+              <option value="todo">Todo</option>
+              <option value="in_progress">In corso</option>
+              <option value="done">Completate</option>
+            </select>
+          } @else {
+            <span class="badge badge-stato-{{ issueAttuale.stato }}">{{ issueAttuale.stato.replace('_', ' ') }}</span>
+          }
+        </div>
+
+        <div class="campo-laterale">
+          <label class="campo-laterale-label">Assegnatario</label>
+          @if (isAdmin) {
+            <select class="campo-laterale-input" [ngModel]="issueAttuale.assegnatarioId" (ngModelChange)="assegna($event)">
+              <option [value]="null">Non assegnata</option>
+              @for (membro of membriTeam(); track membro.id) {
+                <option [value]="membro.id">{{ membro.username }}</option>
+              }
+            </select>
+          } @else {
+            <span class="campo-laterale-valore">{{ nomeMembro(issueAttuale.assegnatarioId) }}</span>
+          }
+        </div>
+
+        @if (issueAttuale.priorita) {
+          <div class="campo-laterale">
+            <label class="campo-laterale-label">Priorità</label>
+            <span class="campo-laterale-valore">{{ issueAttuale.priorita }}</span>
+          </div>
+        }
+      </aside>
+    </div>
+  } @else {
+    <p class="stato-testo">Issue non trovata.</p>
+  }
+</div>

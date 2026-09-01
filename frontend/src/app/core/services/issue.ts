@@ -28,10 +28,22 @@ export class IssueService {
     });
   }
 
+  getIssue(id: number) {
+    return this.http.get<Issue>(`${this.apiUrl}/issues/${id}`, { withCredentials: true });
+  }
+
   cambiaStato(issueId: number, nuovoStato: StatoIssue) {
     return this.http.patch<Issue>(
       `${this.apiUrl}/issues/${issueId}/stato`,
       { stato: nuovoStato },
+      { withCredentials: true }
+    );
+  }
+
+  assegnaIssue(issueId: number, assegnatarioId: number) {
+    return this.http.patch<Issue>(
+      `${this.apiUrl}/issues/${issueId}/assegnatario`,
+      { assegnatarioId },
       { withCredentials: true }
     );
   }
