@@ -22,6 +22,12 @@
   text-decoration: none;
   font-size: 14px;
 
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
   &:hover {
     background: #f0f0f0;
   }
@@ -32,20 +38,6 @@
     font-weight: 600;
   }
 }
-
-.nav-icona {
-  font-size: 16px;
-}
-
-.sidebar {
-  width: 220px;
-  flex-shrink: 0;
-  background: #ffffff;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  padding: 16px 12px;
-}
-
-// ... (nav, nav-item, nav-icona invariati)
 
 @media (max-width: 768px) {
   .sidebar {
@@ -68,32 +60,5 @@
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
     z-index: 99;
-  }
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border-radius: 6px;
-  color: rgba(0, 0, 0, 0.7);
-  text-decoration: none;
-  font-size: 14px;
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-
-  &:hover {
-    background: #f0f0f0;
-  }
-
-  &.attivo {
-    background: #e8eaff;
-    color: var(--colore-primario-chiaro);
-    font-weight: 600;
   }
 }
