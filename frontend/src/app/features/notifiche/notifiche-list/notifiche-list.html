@@ -1,0 +1,27 @@
+<div class="pagina">
+  <div class="intestazione">
+    <h1 class="titolo-pagina">Notifiche</h1>
+    @if (nonLette > 0) {
+      <span class="badge-non-lette">{{ nonLette }} da leggere</span>
+    }
+  </div>
+
+  @if (caricamento()) {
+    <p class="stato-testo">Caricamento...</p>
+  } @else if (notifiche().length === 0) {
+    <p class="stato-testo">Nessuna notifica.</p>
+  } @else {
+    <div class="lista-notifiche">
+      @for (notifica of notifiche(); track notifica.id) {
+        <div
+          class="notifica"
+          [class.notifica-non-letta]="!notifica.letta"
+          [class.notifica-cliccabile]="notifica.issueId"
+          (click)="apriNotifica(notifica)">
+          <p class="notifica-messaggio">{{ notifica.messaggio }}</p>
+          <span class="notifica-data">{{ notifica.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -7,6 +7,7 @@ export interface EventoIssue {
   descrizione: string;
   autoreId: number;
   statoPrecedente?: StatoIssue; // presente solo per eventi di cambio-stato
+  assegnatarioPrecedente?: number | null; // presente solo per eventi di assegnazione
 }
 
 /**

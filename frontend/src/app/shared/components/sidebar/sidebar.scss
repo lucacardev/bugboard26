@@ -37,14 +37,6 @@
   font-size: 16px;
 }
 
-.nav-separatore {
-  margin: 16px 0 6px 12px;
-  font-size: 11px;
-  text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.4);
-  font-weight: 600;
-}
-
 .sidebar {
   width: 220px;
   flex-shrink: 0;
@@ -53,7 +45,7 @@
   padding: 16px 12px;
 }
 
-// ... (nav, nav-item, nav-icona, nav-separatore invariati)
+// ... (nav, nav-item, nav-icona invariati)
 
 @media (max-width: 768px) {
   .sidebar {

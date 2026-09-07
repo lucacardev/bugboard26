@@ -1,0 +1,78 @@
+.pagina {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 48px) clamp(16px, 4vw, 32px);
+}
+
+.intestazione {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.titolo-pagina {
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 700;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.badge-non-lette {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #e0f7fc;
+  color: #0891b2;
+}
+
+.stato-testo {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+}
+
+.lista-notifiche {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.notifica {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-left: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notifica-cliccabile {
+  cursor: pointer;
+
+  &:hover {
+    background: #f7f8fa;
+  }
+}
+
+.notifica-non-letta {
+  border-left-color: #4fd1f5;
+  background: #f2fafd;
+
+  .notifica-messaggio {
+    font-weight: 600;
+  }
+}
+
+.notifica-messaggio {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+  margin: 0;
+}
+
+.notifica-data {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+}
