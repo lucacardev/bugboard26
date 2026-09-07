@@ -44,14 +44,17 @@
           }
         </div>
 
-        <section class="sezione">
+        <section class="sezione sezione-commenti">
           <h2 class="sezione-titolo">Commenti</h2>
 
           <div class="lista-commenti">
             @for (commento of commenti(); track commento.id) {
-              <div class="commento">
+              <div class="commento" [class.commento-mio]="eMio(commento.autoreId)">
+                <div class="commento-intestazione">
+                  <span class="commento-autore">{{ nomeAutore(commento.autoreId) }}</span>
+                  <span class="commento-data">{{ commento.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </div>
                 <p class="commento-testo">{{ commento.testo }}</p>
-                <span class="commento-data">{{ commento.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
               </div>
             } @empty {
               <p class="stato-testo">Nessun commento.</p>
@@ -66,20 +69,6 @@
               placeholder="Scrivi un commento...">
             </textarea>
             <button class="bottone-commento" (click)="inviaCommento()">Invia</button>
-          </div>
-        </section>
-
-        <section class="sezione">
-          <h2 class="sezione-titolo">Cronologia</h2>
-          <div class="lista-cronologia">
-            @for (voce of cronologia(); track voce.id) {
-              <div class="voce-cronologia">
-                <span class="voce-testo">{{ voce.descrizione }}</span>
-                <span class="voce-data">{{ nomeMembro(voce.autoreId) }} — {{ voce.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
-              </div>
-            } @empty {
-              <p class="stato-testo">Nessuna voce di cronologia.</p>
-            }
           </div>
         </section>
       </div>
@@ -120,6 +109,20 @@
         }
       </aside>
     </div>
+
+    <section class="sezione sezione-cronologia">
+      <h2 class="sezione-titolo">Cronologia</h2>
+      <div class="lista-cronologia">
+        @for (voce of cronologia(); track voce.id) {
+          <div class="voce-cronologia">
+            <span class="voce-testo">{{ voce.descrizione }}</span>
+            <span class="voce-data">{{ nomeMembro(voce.autoreId) }} — {{ voce.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        } @empty {
+          <p class="stato-testo">Nessuna voce di cronologia.</p>
+        }
+      </div>
+    </section>
   } @else {
     <p class="stato-testo">Issue non trovata.</p>
   }
