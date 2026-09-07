@@ -7,15 +7,15 @@ export class CommentoController {
   constructor(private readonly commentoService: CommentoService) {}
 
   scriviCommento = async (req: Request, res: Response): Promise<void> => {
-    const { testo, issueId, autoreId } = req.body;
-    if (!testo || !issueId || !autoreId) {
+    const { testo, issueId } = req.body;
+    if (!testo || !issueId) {
       res.status(400).json({
-        errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: testo, issueId, autoreId' },
+        errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: testo, issueId' },
       });
       return;
     }
     try {
-      const commento = await this.commentoService.scriviCommento({ testo, issueId, autoreId });
+      const commento = await this.commentoService.scriviCommento({ testo, issueId, autoreId: req.utente!.id });
       res.status(201).json(commento);
     } catch (errore) {
       console.error('Errore durante la scrittura del commento:', errore);
@@ -35,9 +35,9 @@ export class CommentoController {
   };
 
   modificaTesto = async (req: Request, res: Response): Promise<void> => {
-    const { testo, autoreId } = req.body;
-    if (!testo || !autoreId) {
-      res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campi obbligatori mancanti: testo, autoreId' } });
+    const { testo } = req.body;
+    if (!testo) {
+      res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campo obbligatorio mancante: testo' } });
       return;
     }
     try {
@@ -46,7 +46,7 @@ export class CommentoController {
       // Controllo di autorizzazione: solo l'autore può modificare il proprio commento.
       // Richiede una lettura preliminare per conoscere l'autore reale della riga.
       const commentoEsistente = await this.commentoService.getCommento(id);
-      if (commentoEsistente.autoreId !== autoreId) {
+      if (commentoEsistente.autoreId !== req.utente!.id) {
         res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Non sei l\'autore di questo commento' } });
         return;
       }
