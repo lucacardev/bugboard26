@@ -31,4 +31,8 @@ export class UserRepository {
       ],
     });
   }
+
+  async findAll() { 
+    return Utente.findAll(); 
+  }
 }

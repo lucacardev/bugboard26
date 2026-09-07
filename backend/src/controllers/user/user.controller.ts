@@ -50,4 +50,14 @@ export class UserController {
         res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante la creazione dell\'utente' } });
     }
   };
+
+  getTuttiGliUtenti = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const utenti = await this.userService.getTuttiGliUtenti();
+      res.status(200).json(utenti);
+    } catch (errore) {
+      console.error('Errore durante il recupero degli utenti:', errore);
+      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante il recupero degli utenti' } });
+    }
+  };
 }

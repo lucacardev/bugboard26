@@ -17,5 +17,6 @@ const userController = new UserController(userService);
 router.post('/utenti', autenticazione, soloAmministratore, userController.creaUtente);
 router.get('/utenti/:id', autenticazione, userController.getUtente);
 router.get('/teams/:teamId/utenti', autenticazione, userController.getMembriTeam);
+router.get('/utenti', autenticazione, soloAmministratore, userController.getTuttiGliUtenti);
 
 export default router;

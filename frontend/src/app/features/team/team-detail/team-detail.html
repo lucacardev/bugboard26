@@ -2,7 +2,34 @@
   <button class="link-torna" (click)="torna()">
     &larr; {{ progettoIdOrigine ? 'Torna al progetto' : 'I tuoi progetti' }}
   </button>
-  <h1 class="titolo-pagina">Membri del team</h1>
+
+  <div class="intestazione">
+    <h1 class="titolo-pagina">Membri del team</h1>
+    @if (isAdmin && !aggiuntaAttiva) {
+      <button class="bottone-aggiungi" (click)="apriAggiunta()">+ Aggiungi membro</button>
+    }
+  </div>
+
+  @if (aggiuntaAttiva) {
+    <div class="riquadro-aggiunta">
+      @if (errore) {
+        <p class="messaggio-errore">{{ errore }}</p>
+      }
+      @if (utentiDisponibili().length === 0) {
+        <p class="stato-testo">Tutti gli utenti sono già membri di questo team.</p>
+      } @else {
+        <select class="select-utente" [(ngModel)]="utenteDaAggiungere">
+          <option value="" disabled selected>Seleziona un utente...</option>
+          @for (utente of utentiDisponibili(); track utente.id) {
+            <option [value]="utente.id">{{ utente.username }} ({{ utente.email }})</option>
+          }
+        </select>
+        <button class="bottone-conferma" (click)="confermaAggiunta()">Aggiungi</button>
+      }
+      <button class="bottone-annulla-inline" (click)="annullaAggiunta()">Annulla</button>
+    </div>
+  }
+
   @if (caricamento()) {
     <p class="stato-testo">Caricamento...</p>
   } @else if (membri().length === 0) {
@@ -14,6 +41,9 @@
           <th>Username</th>
           <th>Email</th>
           <th>Ruolo</th>
+          @if (isAdmin) {
+            <th></th>
+          }
         </tr>
       </thead>
       <tbody>
@@ -21,7 +51,12 @@
           <tr>
             <td>{{ membro.username }}</td>
             <td>{{ membro.email }}</td>
-            <td><span class="badge badge-ruolo">{{ membro.ruolo }}</span></td>
+            <td><span class="badge-ruolo">{{ membro.ruolo }}</span></td>
+            @if (isAdmin) {
+              <td>
+                <button class="bottone-rimuovi" (click)="rimuoviMembro(membro.id)">Rimuovi</button>
+              </td>
+            }
           </tr>
         }
       </tbody>

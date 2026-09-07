@@ -35,4 +35,8 @@ export class UserService {
     const cognitoSub = await this.cognitoService.creaUtenteCognito(dati.email);
     return this.userRepository.create({ cognitoSub, username: dati.username, email: dati.email, ruolo: dati.ruolo });
   }
+
+  async getTuttiGliUtenti(): Promise<Utente[]> {
+    return this.userRepository.findAll();
+  }
 }

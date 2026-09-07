@@ -13,4 +13,12 @@ export class TeamService {
   getMembri(teamId: number) {
     return this.http.get<Utente[]>(`${this.apiUrl}/teams/${teamId}/membri`, { withCredentials: true });
   }
+
+  aggiungiMembro(teamId: number, utenteId: number) {
+    return this.http.post(`${this.apiUrl}/teams/${teamId}/membri`, { utenteId }, { withCredentials: true });
+  }
+
+  rimuoviMembro(teamId: number, utenteId: number) {
+    return this.http.delete(`${this.apiUrl}/teams/${teamId}/membri/${utenteId}`, { withCredentials: true });
+  }
 }
