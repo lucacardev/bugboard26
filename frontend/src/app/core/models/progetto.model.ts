@@ -2,7 +2,11 @@ export interface Progetto {
   id: number;
   nome: string;
   descrizione: string | null;
-  teamId: number;
+  team: {
+    id: number;
+    nome: string;
+    progettoId: number;
+  };
   creatoDa: number;
   createdAt: string;
   updatedAt: string;

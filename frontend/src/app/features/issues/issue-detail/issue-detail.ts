@@ -66,7 +66,7 @@ export class IssueDetail implements OnInit {
         this.progettoService.getProgetto(issue.progettoId).subscribe({
           next: (progetto) => {
             this.progetto.set(progetto);
-            this.teamService.getMembri(progetto.teamId).subscribe({
+            this.teamService.getMembri(progetto.team.id).subscribe({
               next: (membri) => this.membriTeam.set(membri),
             });
             this.etichettaService.getEtichetteProgetto(progetto.id).subscribe({
@@ -195,6 +195,22 @@ export class IssueDetail implements OnInit {
 
   nomeMembro(utenteId: number | null): string {
     if (!utenteId) return 'Non assegnata';
+    return this.nomeUtenteDaId(utenteId);
+  }
+
+  // Come nomeMembro, ma per l'autore di un commento: mostra "Tu" se coincide
+  // con l'utente attualmente autenticato, altrimenti il nome del membro (o
+  // il fallback "Utente #N" se non fa più parte del team, es. rimosso in seguito).
+  nomeAutore(autoreId: number): string {
+    return this.eMio(autoreId) ? 'Tu' : this.nomeUtenteDaId(autoreId);
+  }
+
+  // Usato anche dal template per lo stile distintivo dei propri commenti.
+  eMio(autoreId: number): boolean {
+    return autoreId === this.auth.currentUser()?.id;
+  }
+
+  private nomeUtenteDaId(utenteId: number): string {
     const membro = this.membriTeam().find((m) => m.id === utenteId);
     return membro?.username ?? `Utente #${utenteId}`;
   }

@@ -7,7 +7,7 @@
       @if (progetto(); as p) {
         <button
           class="bottone-team"
-          [routerLink]="['/team', p.teamId]"
+          [routerLink]="['/team', p.team.id]"
           [queryParams]="{ progettoId: progettoId }">
           <mat-icon>group</mat-icon>
           Team
