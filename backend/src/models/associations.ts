@@ -13,7 +13,7 @@ import { Notifica } from './Notifica';
 
 export function definisciAssociazioni() {
   // Progetto - Team (composizione 1:1)
-  Progetto.hasOne(Team, { foreignKey: 'progettoId', onDelete: 'CASCADE' });
+  Progetto.hasOne(Team, { foreignKey: 'progettoId', onDelete: 'CASCADE', as: 'team' });
   Team.belongsTo(Progetto, { foreignKey: 'progettoId' });
 
   // Utente - Progetto (crea)

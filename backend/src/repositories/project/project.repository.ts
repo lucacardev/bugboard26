@@ -8,7 +8,7 @@ import { Utente } from '../../models/Utente';
 export class ProgettoRepository {
   async findById(id: number): Promise<Progetto | null> {
     return Progetto.findByPk(id, {
-      include: [{ model: Team }],
+      include: [{ model: Team, as: 'team' }],
     });
   }
 
@@ -21,6 +21,7 @@ export class ProgettoRepository {
         include: [
         {
             model: Team,
+            as: 'team',
             required: true,
             include: [
             {
