@@ -8,7 +8,7 @@ import { CronologiaRepository } from '../repositories/cronologia/cronologia.repo
 import { CronologiaService } from '../services/cronologia/cronologia.service';
 import { CronologiaObserver } from '../services/cronologia/cronologia.observer';
 import { NotificationObserver } from '../services/notification/notification.observer';
-import { autenticazione, soloAmministratore } from '../middlewares/auth.middleware';
+import { autenticazione, soloAmministratore, vietaStakeholder } from '../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -22,10 +22,10 @@ issueService.attach(new NotificationObserver());
 
 const issueController = new IssueController(issueService);
 
-router.post('/issues', autenticazione, issueController.segnalaIssue);
+router.post('/issues', autenticazione, vietaStakeholder, issueController.segnalaIssue);
 router.get('/issues/:id', autenticazione, issueController.getIssue);
 router.get('/progetti/:progettoId/issues', autenticazione, issueController.visualizzaIssueProgetto);
-router.patch('/issues/:id/stato', autenticazione, issueController.cambiaStato);
+router.patch('/issues/:id/stato', autenticazione, vietaStakeholder, issueController.cambiaStato);
 router.patch('/issues/:id/assegnatario', autenticazione, soloAmministratore, issueController.assegnaIssue);
 
 export default router;

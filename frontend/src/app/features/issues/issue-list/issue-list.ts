@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CdkDropList, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { IssueService } from '../../../core/services/issue';
 import { ProgettoService } from '../../../core/services/progetto';
+import { AuthService } from '../../../core/services/auth';
 import { Issue, TipoIssue, StatoIssue } from '../../../core/models/issue.model';
 import { Progetto } from '../../../core/models/progetto.model';
 import { IssueFormDialog, IssueFormDialogData } from '../../../shared/components/issue-form-dialog/issue-form-dialog';
@@ -29,7 +30,12 @@ export class IssueList implements OnInit {
   private router = inject(Router);
   private issueService = inject(IssueService);
   private progettoService = inject(ProgettoService);
+  private auth = inject(AuthService);
   private dialog = inject(MatDialog);
+
+  get isStakeholder(): boolean {
+    return this.auth.currentUser()?.ruolo === 'stakeholder';
+  }
 
   progettoId = Number(this.route.snapshot.paramMap.get('progettoId'));
   progetto = signal<Progetto | null>(null);

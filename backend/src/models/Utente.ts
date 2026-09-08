@@ -3,7 +3,7 @@
 import { Model, DataTypes, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export type RuoloUtente = 'normale' | 'amministratore';
+export type RuoloUtente = 'normale' | 'amministratore' | 'stakeholder';
 
 export class Utente extends Model<InferAttributes<Utente>, InferCreationAttributes<Utente>> {
   declare id: CreationOptional<number>;
@@ -20,7 +20,7 @@ Utente.init(
     username: { type: DataTypes.STRING, allowNull: false },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
     ruolo: {
-      type: DataTypes.ENUM('normale', 'amministratore'),
+      type: DataTypes.ENUM('normale', 'amministratore', 'stakeholder'),
       allowNull: false,
       defaultValue: 'normale',
     },

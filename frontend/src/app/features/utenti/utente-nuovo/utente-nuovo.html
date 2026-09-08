@@ -1,0 +1,40 @@
+<div class="pagina">
+  <button class="link-torna" (click)="annulla()">&larr; Torna ai progetti</button>
+  <h1 class="titolo-pagina">Nuovo utente</h1>
+
+  <p class="info-testo">
+    All'utente verrà inviata via email una password temporanea, che dovrà cambiare al primo accesso.
+  </p>
+
+  <form class="form-utente" (ngSubmit)="creaUtente()">
+    <div class="campo">
+      <label class="campo-label">Username</label>
+      <input class="campo-input" type="text" [(ngModel)]="username" name="username" required>
+    </div>
+
+    <div class="campo">
+      <label class="campo-label">Email</label>
+      <input class="campo-input" type="email" [(ngModel)]="email" name="email" required>
+    </div>
+
+    <div class="campo">
+      <label class="campo-label">Ruolo</label>
+      <select class="campo-input" [(ngModel)]="ruolo" name="ruolo">
+        <option value="normale">Normale</option>
+        <option value="amministratore">Amministratore</option>
+        <option value="stakeholder">Stakeholder (sola lettura)</option>
+      </select>
+    </div>
+
+    @if (errore()) {
+      <p class="errore-testo">{{ errore() }}</p>
+    }
+
+    <div class="azioni">
+      <button type="button" class="bottone-annulla" (click)="annulla()">Annulla</button>
+      <button type="submit" class="bottone-crea" [disabled]="inCorso()">
+        {{ inCorso() ? 'Creazione...' : 'Crea utente' }}
+      </button>
+    </div>
+  </form>
+</div>

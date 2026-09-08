@@ -8,6 +8,14 @@
       <mat-icon>notifications</mat-icon>
       <span>Notifiche</span>
     </a>
+
+    @if (isAdmin) {
+      <div class="nav-separatore">Amministrazione</div>
+      <a routerLink="/utenti/nuovo" routerLinkActive="attivo" class="nav-item" (click)="layout.chiudiSidebar()">
+        <mat-icon>person_add</mat-icon>
+        <span>Nuovo utente</span>
+      </a>
+    }
   </nav>
 </aside>
 

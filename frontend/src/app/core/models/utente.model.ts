@@ -1,4 +1,4 @@
-export type RuoloUtente = 'normale' | 'amministratore';
+export type RuoloUtente = 'normale' | 'amministratore' | 'stakeholder';
 
 export interface Utente {
   id: number;

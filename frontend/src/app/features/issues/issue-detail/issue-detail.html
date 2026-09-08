@@ -16,31 +16,35 @@
           @for (etichetta of etichetteIssue(); track etichetta.id) {
             <span class="etichetta-pill" [style.background]="etichetta.colore">
               {{ etichetta.testo }}
-              <button class="etichetta-rimuovi" (click)="rimuoviEtichetta(etichetta.id)">&times;</button>
+              @if (!isStakeholder) {
+                <button class="etichetta-rimuovi" (click)="rimuoviEtichetta(etichetta.id)">&times;</button>
+              }
             </span>
           }
 
-          @if (aggiuntaEtichettaAttiva) {
-            <div class="aggiunta-etichetta">
-              @if (etichetteDisponibili.length > 0) {
-                <select class="etichetta-select" (change)="aggiungiEtichettaEsistente($any($event.target).value)">
-                  <option value="" disabled selected>Etichetta esistente...</option>
-                  @for (etichetta of etichetteDisponibili; track etichetta.id) {
-                    <option [value]="etichetta.id">{{ etichetta.testo }}</option>
-                  }
-                </select>
-              }
-              <input
-                class="etichetta-input"
-                type="text"
-                [(ngModel)]="testoNuovaEtichetta"
-                placeholder="Nuova etichetta..."
-                (keydown.enter)="confermaCreazioneEtichetta()">
-              <button class="etichetta-bottone" (click)="confermaCreazioneEtichetta()">Crea</button>
-              <button class="etichetta-bottone-annulla" (click)="annullaCreazioneEtichetta()">Annulla</button>
-            </div>
-          } @else {
-            <button class="etichetta-aggiungi" (click)="apriCreazioneEtichetta()">+ Etichetta</button>
+          @if (!isStakeholder) {
+            @if (aggiuntaEtichettaAttiva) {
+              <div class="aggiunta-etichetta">
+                @if (etichetteDisponibili.length > 0) {
+                  <select class="etichetta-select" (change)="aggiungiEtichettaEsistente($any($event.target).value)">
+                    <option value="" disabled selected>Etichetta esistente...</option>
+                    @for (etichetta of etichetteDisponibili; track etichetta.id) {
+                      <option [value]="etichetta.id">{{ etichetta.testo }}</option>
+                    }
+                  </select>
+                }
+                <input
+                  class="etichetta-input"
+                  type="text"
+                  [(ngModel)]="testoNuovaEtichetta"
+                  placeholder="Nuova etichetta..."
+                  (keydown.enter)="confermaCreazioneEtichetta()">
+                <button class="etichetta-bottone" (click)="confermaCreazioneEtichetta()">Crea</button>
+                <button class="etichetta-bottone-annulla" (click)="annullaCreazioneEtichetta()">Annulla</button>
+              </div>
+            } @else {
+              <button class="etichetta-aggiungi" (click)="apriCreazioneEtichetta()">+ Etichetta</button>
+            }
           }
         </div>
 
@@ -62,13 +66,15 @@
           </div>
 
           <div class="nuovo-commento">
-            <textarea
-              class="commento-input"
-              [(ngModel)]="nuovoCommento"
-              rows="2"
-              placeholder="Scrivi un commento...">
-            </textarea>
-            <button class="bottone-commento" (click)="inviaCommento()">Invia</button>
+            @if (!isStakeholder) {
+              <textarea
+                class="commento-input"
+                [(ngModel)]="nuovoCommento"
+                rows="2"
+                placeholder="Scrivi un commento...">
+              </textarea>
+              <button class="bottone-commento" (click)="inviaCommento()">Invia</button>
+            }
           </div>
         </section>
       </div>
@@ -92,7 +98,7 @@
           @if (isAdmin) {
             <select class="campo-laterale-input" [ngModel]="issueAttuale.assegnatarioId" (ngModelChange)="assegna($event)">
               <option [value]="null">Non assegnata</option>
-              @for (membro of membriTeam(); track membro.id) {
+              @for (membro of membriAssegnabili; track membro.id) {
                 <option [value]="membro.id">{{ membro.username }}</option>
               }
             </select>
@@ -110,19 +116,21 @@
       </aside>
     </div>
 
-    <section class="sezione sezione-cronologia">
-      <h2 class="sezione-titolo">Cronologia</h2>
-      <div class="lista-cronologia">
-        @for (voce of cronologia(); track voce.id) {
-          <div class="voce-cronologia">
-            <span class="voce-testo">{{ voce.descrizione }}</span>
-            <span class="voce-data">{{ nomeMembro(voce.autoreId) }} — {{ voce.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
-          </div>
-        } @empty {
-          <p class="stato-testo">Nessuna voce di cronologia.</p>
-        }
-      </div>
-    </section>
+    @if (!isStakeholder) {
+      <section class="sezione sezione-cronologia">
+        <h2 class="sezione-titolo">Cronologia</h2>
+        <div class="lista-cronologia">
+          @for (voce of cronologia(); track voce.id) {
+            <div class="voce-cronologia">
+              <span class="voce-testo">{{ voce.descrizione }}</span>
+              <span class="voce-data">{{ nomeMembro(voce.autoreId) }} — {{ voce.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          } @empty {
+            <p class="stato-testo">Nessuna voce di cronologia.</p>
+          }
+        </div>
+      </section>
+    }
   } @else {
     <p class="stato-testo">Issue non trovata.</p>
   }

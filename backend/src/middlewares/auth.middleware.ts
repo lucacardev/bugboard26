@@ -42,3 +42,17 @@ export function soloAmministratore(req: Request, res: Response, next: NextFuncti
   }
   next();
 }
+
+/**
+ * Blocca le operazioni di scrittura per gli account stakeholder (punto 15 della
+ * traccia: "modalità readonly per utenti esterni... senza possibilità di modifica").
+ * Da applicare a ogni rotta di scrittura non già protetta da soloAmministratore
+ * (che di per sé esclude già lo stakeholder, non essendo amministratore).
+ */
+export function vietaStakeholder(req: Request, res: Response, next: NextFunction): void {
+  if (req.utente?.ruolo === 'stakeholder') {
+    res.status(403).json({ errore: { codice: 'ACCOUNT_READONLY', messaggio: 'Il tuo account ha accesso in sola lettura' } });
+    return;
+  }
+  next();
+}

@@ -55,7 +55,9 @@ export class IssueDetail implements OnInit {
   ngOnInit(): void {
     this.caricaIssue();
     this.caricaCommenti();
-    this.caricaCronologia();
+    if (!this.isStakeholder) {
+      this.caricaCronologia();
+    }
     this.caricaEtichetteIssue();
   }
 
@@ -100,6 +102,17 @@ export class IssueDetail implements OnInit {
 
   get isAdmin(): boolean {
     return this.auth.currentUser()?.ruolo === 'amministratore';
+  }
+
+  get isStakeholder(): boolean {
+    return this.auth.currentUser()?.ruolo === 'stakeholder';
+  }
+
+  // Uno stakeholder può essere membro di un team (per la visibilità sul
+  // progetto) ma non è un lavoratore assegnabile alle issue: punto 15,
+  // account in sola lettura.
+  get membriAssegnabili(): Utente[] {
+    return this.membriTeam().filter((m) => m.ruolo !== 'stakeholder');
   }
 
   get puoModificareStato(): boolean {

@@ -22,6 +22,11 @@ export class CronologiaController {
         return;
       }
 
+      if (req.utente!.ruolo === 'stakeholder') {
+        res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Il tuo account non può visualizzare la cronologia' } });
+        return;
+      }
+
       if (req.utente!.ruolo !== 'amministratore') {
         const team = await this.teamRepository.findByProgettoId(issue.progettoId);
         const membro = team ? await this.teamRepository.isMembro(team.id, req.utente!.id) : false;

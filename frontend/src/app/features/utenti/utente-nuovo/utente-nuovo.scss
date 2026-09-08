@@ -1,0 +1,106 @@
+.pagina {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 48px) clamp(16px, 4vw, 32px);
+}
+
+.link-torna {
+  border: none;
+  background: none;
+  color: var(--colore-primario-chiaro);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.titolo-pagina {
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.info-testo {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.5);
+  margin: 0 0 24px;
+}
+
+.form-utente {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.campo-input {
+  padding: 10px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  background: #ffffff;
+}
+
+.errore-testo {
+  color: #c62828;
+  font-size: 13px;
+  margin: 0;
+}
+
+.azioni {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.bottone-annulla {
+  padding: 9px 18px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  background: #ffffff;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    background: #f5f5f5;
+  }
+}
+
+.bottone-crea {
+  padding: 9px 20px;
+  border: none;
+  border-radius: 16px;
+  background: var(--colore-primario-chiaro);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--colore-primario);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
