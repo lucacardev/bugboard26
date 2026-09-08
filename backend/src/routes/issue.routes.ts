@@ -26,6 +26,7 @@ router.post('/issues', autenticazione, vietaStakeholder, issueController.segnala
 router.get('/issues/:id', autenticazione, issueController.getIssue);
 router.get('/progetti/:progettoId/issues', autenticazione, issueController.visualizzaIssueProgetto);
 router.patch('/issues/:id/stato', autenticazione, vietaStakeholder, issueController.cambiaStato);
+router.patch('/issues/:id/priorita', autenticazione, vietaStakeholder, issueController.cambiaPriorita);
 router.patch('/issues/:id/assegnatario', autenticazione, soloAmministratore, issueController.assegnaIssue);
 
 export default router;

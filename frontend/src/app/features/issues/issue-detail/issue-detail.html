@@ -107,12 +107,19 @@
           }
         </div>
 
-        @if (issueAttuale.priorita) {
-          <div class="campo-laterale">
-            <label class="campo-laterale-label">Priorità</label>
-            <span class="campo-laterale-valore">{{ issueAttuale.priorita }}</span>
-          </div>
-        }
+        <div class="campo-laterale">
+          <label class="campo-laterale-label">Priorità</label>
+          @if (puoModificareStato) {
+            <select class="campo-laterale-input" [ngModel]="issueAttuale.priorita" (ngModelChange)="cambiaPriorita($event)">
+              <option [value]="null">Nessuna</option>
+              <option value="bassa">Bassa</option>
+              <option value="media">Media</option>
+              <option value="alta">Alta</option>
+            </select>
+          } @else {
+            <span class="campo-laterale-valore">{{ issueAttuale.priorita || 'Nessuna' }}</span>
+          }
+        </div>
       </aside>
     </div>
 

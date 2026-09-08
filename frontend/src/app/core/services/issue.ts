@@ -40,6 +40,14 @@ export class IssueService {
     );
   }
 
+  cambiaPriorita(issueId: number, nuovaPriorita: string | null) {
+    return this.http.patch<Issue>(
+      `${this.apiUrl}/issues/${issueId}/priorita`,
+      { priorita: nuovaPriorita },
+      { withCredentials: true }
+    );
+  }
+
   assegnaIssue(issueId: number, assegnatarioId: number) {
     return this.http.patch<Issue>(
       `${this.apiUrl}/issues/${issueId}/assegnatario`,

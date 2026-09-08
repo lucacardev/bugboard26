@@ -138,6 +138,16 @@ export class IssueDetail implements OnInit {
     });
   }
 
+  cambiaPriorita(nuovaPriorita: string | null): void {
+    this.issueService.cambiaPriorita(this.issueId, nuovaPriorita).subscribe({
+      next: (issueAggiornata) => {
+        this.issue.set(issueAggiornata);
+        this.caricaCronologia();
+      },
+      error: () => alert('Non sei autorizzato a modificare la priorità di questa issue'),
+    });
+  }
+
   assegna(assegnatarioId: string): void {
     if (!assegnatarioId) return;
     this.issueService.assegnaIssue(this.issueId, Number(assegnatarioId)).subscribe({

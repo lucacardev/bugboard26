@@ -124,4 +124,40 @@ export class IssueController {
     }
   };
 
+  /**
+   * Nessun punto della traccia specifica chi possa modificare la priorità dopo
+   * la creazione (menzionata solo in fase di segnalazione, punto 2): per
+   * coerenza con l'unica regola di autorizzazione già stabilita per un campo
+   * operativo analogo (stato, punti 6/9), si riusa lo stesso perimetro
+   * (assegnatario o amministratore) invece di introdurne una nuova.
+   */
+  cambiaPriorita = async (req: Request, res: Response): Promise<void> => {
+    const { priorita } = req.body;
+    const valoriAmmessi = ['bassa', 'media', 'alta', null];
+    if (priorita !== undefined && !valoriAmmessi.includes(priorita)) {
+      res.status(400).json({ errore: { codice: 'PRIORITA_NON_VALIDA', messaggio: 'Priorità non valida: usare bassa, media, alta oppure null' } });
+      return;
+    }
+    try {
+      const id = Number(req.params.id);
+      const issueEsistente = await this.issueService.getIssue(id);
+
+      const autorizzato = req.utente!.ruolo === 'amministratore' || issueEsistente.assegnatarioId === req.utente!.id;
+      if (!autorizzato) {
+        res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Non sei l\'assegnatario di questa issue' } });
+        return;
+      }
+
+      const issueAggiornata = await this.issueService.cambiaPriorita(id, priorita ?? null, req.utente!.id);
+      res.status(200).json(issueAggiornata);
+    } catch (errore) {
+      if (errore instanceof Error && errore.message === 'ISSUE_NON_TROVATA') {
+        res.status(404).json({ errore: { codice: 'ISSUE_NON_TROVATA', messaggio: 'Nessuna issue trovata con questo id' } });
+        return;
+      }
+      console.error('Errore durante il cambio di priorità della issue:', errore);
+      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante il cambio di priorità della issue' } });
+    }
+  };
+
 }

@@ -57,6 +57,19 @@ export class IssueService {
     return issueSalvata;
   }
 
+  async cambiaPriorita(id: number, nuovaPriorita: string | null, autoreId: number): Promise<Issue> {
+    const issue = await this.getIssue(id);
+    const prioritaPrecedente = issue.priorita;
+    issue.cambiaPriorita(nuovaPriorita);
+    const issueSalvata = await this.issueRepository.save(issue);
+    await this.notifica({
+      issue: issueSalvata,
+      descrizione: `Priorità cambiata da "${prioritaPrecedente ?? 'nessuna'}" a "${nuovaPriorita ?? 'nessuna'}"`,
+      autoreId,
+    });
+    return issueSalvata;
+  }
+
   async assegnaA(id: number, utenteId: number, autoreId: number): Promise<Issue> {
     const issue = await this.getIssue(id);
     const assegnatarioPrecedente = issue.assegnatarioId;

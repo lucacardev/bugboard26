@@ -21,6 +21,10 @@ export class Issue extends Model<InferAttributes<Issue>, InferCreationAttributes
     this.stato = nuovoStato;
   }
 
+  cambiaPriorita(nuovaPriorita: string | null): void {
+    this.priorita = nuovaPriorita;
+  }
+
   assegnaA(utenteId: number): void {
     this.assegnatarioId = utenteId;
   }
