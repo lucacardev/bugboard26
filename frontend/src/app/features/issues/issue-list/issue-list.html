@@ -40,6 +40,13 @@
         <option value="in_progress">In corso</option>
         <option value="done">Completate</option>
       </select>
+
+      <select [ngModel]="ordinamento()" (ngModelChange)="cambiaOrdinamento($event)">
+        <option value="recenti">Più recenti</option>
+        <option value="vecchi">Meno recenti</option>
+        <option value="titolo">Titolo (A-Z)</option>
+        <option value="priorita">Priorità</option>
+      </select>
     }
   </div>
 

@@ -45,6 +45,9 @@ export class IssueList implements OnInit {
 
   filtroTipo: TipoIssue | '' = '';
   filtroStato: StatoIssue | '' = '';
+  ordinamento = signal<'recenti' | 'vecchi' | 'titolo' | 'priorita'>('recenti');
+
+  private rangoPriorita: Record<string, number> = { alta: 3, media: 2, bassa: 1 };
 
   colonnaTodo = signal<Issue[]>([]);
   colonnaInCorso = signal<Issue[]>([]);
@@ -64,9 +67,25 @@ export class IssueList implements OnInit {
   paginaCorrente = signal(1);
   dimensionePagina = 10;
 
+  issueOrdinate = computed(() => {
+    const lista = [...this.issue()];
+    switch (this.ordinamento()) {
+      case 'recenti':
+        return lista.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      case 'vecchi':
+        return lista.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      case 'titolo':
+        return lista.sort((a, b) => a.titolo.localeCompare(b.titolo));
+      case 'priorita':
+        return lista.sort((a, b) => (this.rangoPriorita[b.priorita ?? ''] ?? 0) - (this.rangoPriorita[a.priorita ?? ''] ?? 0));
+      default:
+        return lista;
+    }
+  });
+
   issuePaginate = computed(() => {
     const inizio = (this.paginaCorrente() - 1) * this.dimensionePagina;
-    return this.issue().slice(inizio, inizio + this.dimensionePagina);
+    return this.issueOrdinate().slice(inizio, inizio + this.dimensionePagina);
   });
 
   totalePagine = computed(() => Math.max(1, Math.ceil(this.issue().length / this.dimensionePagina)));
@@ -100,6 +119,11 @@ export class IssueList implements OnInit {
 
   apriIssue(issue: Issue): void {
     this.router.navigate(['/progetti', this.progettoId, 'issues', issue.id]);
+  }
+
+  cambiaOrdinamento(valore: string): void {
+    this.ordinamento.set(valore as 'recenti' | 'vecchi' | 'titolo' | 'priorita');
+    this.paginaCorrente.set(1);
   }
 
   torna(): void {
