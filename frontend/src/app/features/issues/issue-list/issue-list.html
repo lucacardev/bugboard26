@@ -25,6 +25,16 @@
   </div>
 
   <div class="filtri">
+    @if (!isStakeholder) {
+      <button
+        type="button"
+        class="filtro-toggle"
+        [class.filtro-toggle-attivo]="soloMie()"
+        (click)="toggleSoloMie()">
+        Assegnate a me
+      </button>
+    }
+
     <select [(ngModel)]="filtroTipo" (ngModelChange)="caricaIssue()">
       <option value="">Tutti i tipi</option>
       <option value="bug">Bug</option>

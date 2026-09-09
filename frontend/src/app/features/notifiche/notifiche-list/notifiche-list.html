@@ -1,18 +1,18 @@
 <div class="pagina">
   <div class="intestazione">
     <h1 class="titolo-pagina">Notifiche</h1>
-    @if (nonLette > 0) {
-      <span class="badge-non-lette">{{ nonLette }} da leggere</span>
+    @if (notificationService.nonLette() > 0) {
+      <span class="badge-non-lette">{{ notificationService.nonLette() }} da leggere</span>
     }
   </div>
 
-  @if (caricamento()) {
+  @if (notificationService.caricamento()) {
     <p class="stato-testo">Caricamento...</p>
-  } @else if (notifiche().length === 0) {
+  } @else if (notificationService.notifiche().length === 0) {
     <p class="stato-testo">Nessuna notifica.</p>
   } @else {
     <div class="lista-notifiche">
-      @for (notifica of notifiche(); track notifica.id) {
+      @for (notifica of notificationService.notifiche(); track notifica.id) {
         <div
           class="notifica"
           [class.notifica-non-letta]="!notifica.letta"

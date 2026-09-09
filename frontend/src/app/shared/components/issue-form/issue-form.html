@@ -29,6 +29,16 @@
     </select>
   }
 
+  @if (campoEditabile('assegnatario')) {
+    <label class="campo-label">Assegnatario</label>
+    <select class="campo-input" [(ngModel)]="dati.assegnatarioId" name="assegnatarioId">
+      <option [value]="undefined">Non assegnata</option>
+      @for (membro of membriTeam(); track membro.id) {
+        <option [value]="membro.id">{{ membro.username }}</option>
+      }
+    </select>
+  }
+
   <div class="campo-riga">
     @if (campoEditabile('dataInizio')) {
       <div class="campo-colonna">

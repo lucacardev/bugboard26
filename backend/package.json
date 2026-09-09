@@ -6,6 +6,8 @@
     "test": "jest",
     "dev": "ts-node-dev --files src/index.ts",
     "build": "tsc",
+    "seed:admin": "node dist/seeders/seed-admin.js",
+    "seed:admin:dev": "ts-node-dev --files src/seeders/seed-admin.ts",
     "sonar": "npm test -- --coverage && powershell -ExecutionPolicy Bypass -File scripts/sonar-scan.ps1"
   },
   "keywords": [],

@@ -123,7 +123,7 @@
 
         <div class="campo-laterale">
           <label class="campo-laterale-label">Data inizio</label>
-          @if (puoModificareStato) {
+          @if (isAdmin) {
             <input
               type="date"
               class="campo-laterale-input"
@@ -136,7 +136,7 @@
 
         <div class="campo-laterale">
           <label class="campo-laterale-label">Data scadenza</label>
-          @if (puoModificareStato) {
+          @if (isAdmin) {
             <input
               type="date"
               class="campo-laterale-input"

@@ -32,6 +32,10 @@ export class IssueService {
     return this.http.get<Issue>(`${this.apiUrl}/issues/${id}`, { withCredentials: true });
   }
 
+  getIssueAssegnateAMe() {
+    return this.http.get<Issue[]>(`${this.apiUrl}/issues/assegnate-a-me`, { withCredentials: true });
+  }
+
   cambiaStato(issueId: number, nuovoStato: StatoIssue) {
     return this.http.patch<Issue>(
       `${this.apiUrl}/issues/${issueId}/stato`,

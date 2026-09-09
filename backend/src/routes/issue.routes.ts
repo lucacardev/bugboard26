@@ -23,11 +23,12 @@ issueService.attach(new NotificationObserver());
 const issueController = new IssueController(issueService);
 
 router.post('/issues', autenticazione, vietaStakeholder, issueController.segnalaIssue);
+router.get('/issues/assegnate-a-me', autenticazione, issueController.getIssueAssegnateAMe);
 router.get('/issues/:id', autenticazione, issueController.getIssue);
 router.get('/progetti/:progettoId/issues', autenticazione, issueController.visualizzaIssueProgetto);
 router.patch('/issues/:id/stato', autenticazione, vietaStakeholder, issueController.cambiaStato);
 router.patch('/issues/:id/priorita', autenticazione, vietaStakeholder, issueController.cambiaPriorita);
-router.patch('/issues/:id/date', autenticazione, vietaStakeholder, issueController.cambiaDate);
+router.patch('/issues/:id/date', autenticazione, soloAmministratore, issueController.cambiaDate);
 router.patch('/issues/:id/assegnatario', autenticazione, soloAmministratore, issueController.assegnaIssue);
 
 export default router;

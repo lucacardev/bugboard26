@@ -16,6 +16,12 @@ export class IssueController {
     }
 
     try {
+      // L'assegnazione contestuale alla creazione (Estensione #3) è
+      // riservata all'amministratore, come l'assegnazione post-creazione
+      // (punto 4): un valore inviato da un non-admin viene ignorato, non
+      // basta nascondere il campo lato frontend.
+      const assegnatarioIdSicuro = req.utente!.ruolo === 'amministratore' ? assegnatarioId : undefined;
+
       const nuovaIssue = await this.issueService.segnalaIssue(tipo as TipoIssue, {
         titolo,
         descrizione: descrizione || '',
@@ -24,7 +30,7 @@ export class IssueController {
         dataScadenza,
         progettoId,
         segnalatoreId: req.utente!.id,
-        assegnatarioId,
+        assegnatarioId: assegnatarioIdSicuro,
       });
       res.status(201).json(nuovaIssue);
     } catch (errore) {
@@ -65,6 +71,17 @@ export class IssueController {
     } catch (errore) {
       console.error('Errore durante il recupero delle issue:', errore);
       res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante il recupero delle issue' } });
+    }
+  };
+
+  /** Punto 4 traccia: le issue assegnate all'utente corrente, indipendentemente dal progetto. */
+  getIssueAssegnateAMe = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const issues = await this.issueService.getIssueAssegnateA(req.utente!.id);
+      res.status(200).json(issues);
+    } catch (errore) {
+      console.error('Errore durante il recupero delle issue assegnate:', errore);
+      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante il recupero delle issue assegnate' } });
     }
   };
 
@@ -161,20 +178,15 @@ export class IssueController {
   };
 
   /**
-   * Stesso perimetro di autorizzazione di stato/priorità (assegnatario o
-   * amministratore): nessun punto della traccia lo specifica per le date.
+   * Punto 18 traccia: "Gli amministratori possono impostare scadenze
+   * opzionali" — a differenza di stato/priorità, qui il testo nomina
+   * esplicitamente solo l'amministratore. Autorizzazione già garantita da
+   * soloAmministratore in rotta, nessun controllo aggiuntivo necessario qui.
    */
   cambiaDate = async (req: Request, res: Response): Promise<void> => {
     const { dataInizio, dataScadenza } = req.body;
     try {
       const id = Number(req.params.id);
-      const issueEsistente = await this.issueService.getIssue(id);
-
-      const autorizzato = req.utente!.ruolo === 'amministratore' || issueEsistente.assegnatarioId === req.utente!.id;
-      if (!autorizzato) {
-        res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Non sei l\'assegnatario di questa issue' } });
-        return;
-      }
 
       const issueAggiornata = await this.issueService.cambiaDate(
         id,

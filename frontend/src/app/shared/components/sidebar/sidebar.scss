@@ -47,6 +47,29 @@
   font-weight: 600;
 }
 
+.nav-icona-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.bollino-non-lette {
+  position: absolute;
+  top: -5px;
+  right: -7px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #e53935;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;

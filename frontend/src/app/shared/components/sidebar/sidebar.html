@@ -4,8 +4,19 @@
       <mat-icon>folder_open</mat-icon>
       <span>Progetti</span>
     </a>
+    @if (!isStakeholder) {
+      <a routerLink="/issue-assegnate" routerLinkActive="attivo" class="nav-item" (click)="layout.chiudiSidebar()">
+        <mat-icon>assignment_ind</mat-icon>
+        <span>Issue assegnate</span>
+      </a>
+    }
     <a routerLink="/notifiche" routerLinkActive="attivo" class="nav-item" (click)="layout.chiudiSidebar()">
-      <mat-icon>notifications</mat-icon>
+      <span class="nav-icona-wrapper">
+        <mat-icon>notifications</mat-icon>
+        @if (notificationService.nonLette() > 0) {
+          <span class="bollino-non-lette">{{ notificationService.nonLette() > 9 ? '9+' : notificationService.nonLette() }}</span>
+        }
+      </span>
       <span>Notifiche</span>
     </a>
 

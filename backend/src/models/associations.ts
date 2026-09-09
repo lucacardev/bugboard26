@@ -21,8 +21,8 @@ export function definisciAssociazioni() {
   Progetto.belongsTo(Utente, { foreignKey: 'creatoDa' });
 
   // Progetto - Issue (composizione 1:N)
-  Progetto.hasMany(Issue, { foreignKey: 'progettoId', onDelete: 'CASCADE' });
-  Issue.belongsTo(Progetto, { foreignKey: 'progettoId' });
+  Progetto.hasMany(Issue, { foreignKey: 'progettoId', onDelete: 'CASCADE', as: 'issue' });
+  Issue.belongsTo(Progetto, { foreignKey: 'progettoId', as: 'progetto' });
 
   // Utente - Issue (segnala, 1:N obbligatoria)
   Utente.hasMany(Issue, { foreignKey: 'segnalatoreId', as: 'issueSegnalate' });

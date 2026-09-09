@@ -49,6 +49,31 @@ export class CognitoService {
     return subAttribute.Value;
   }
 
+  /**
+   * Variante usata solo dallo script di seed dell'admin di default (punto 1
+   * traccia: "credenziali di default"). A differenza di creaUtenteCognito,
+   * qui la password temporanea è nota ed esplicita (non generata da Cognito),
+   * e MessageAction: 'SUPPRESS' evita il tentativo di invio email — l'email
+   * di default può essere un placeholder (es. admin@bugboard26.local) che
+   * non riceverebbe comunque nulla.
+   */
+  async creaUtenteCognitoConPassword(email: string, passwordTemporanea: string): Promise<string> {
+    const comando = new AdminCreateUserCommand({
+      UserPoolId: USER_POOL_ID,
+      Username: email,
+      TemporaryPassword: passwordTemporanea,
+      MessageAction: 'SUPPRESS',
+      UserAttributes: [
+        { Name: 'email', Value: email },
+        { Name: 'email_verified', Value: 'true' },
+      ],
+    });
+    const risposta = await cognitoClient.send(comando);
+    const subAttribute = risposta.User?.Attributes?.find((a) => a.Name === 'sub');
+    if (!subAttribute?.Value) throw new Error('COGNITO_SUB_MANCANTE');
+    return subAttribute.Value;
+  }
+
   async login(email: string, password: string): Promise<TokenAutenticazione | SfidaPrimoAccesso> {
     const comando = new InitiateAuthCommand({
       AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,

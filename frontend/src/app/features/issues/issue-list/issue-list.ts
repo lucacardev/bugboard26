@@ -59,6 +59,7 @@ export class IssueList implements OnInit {
 
   filtroTipo: TipoIssue | '' = '';
   filtroStato: StatoIssue | '' = '';
+  soloMie = signal(false);
   ordinamento = signal<'recenti' | 'vecchi' | 'titolo' | 'priorita'>('recenti');
 
   private rangoPriorita: Record<string, number> = { alta: 3, media: 2, bassa: 1 };
@@ -148,6 +149,7 @@ export class IssueList implements OnInit {
       .getIssueDelProgetto(this.progettoId, {
         tipo: this.filtroTipo || undefined,
         stato: this.filtroStato || undefined,
+        assegnatarioId: this.soloMie() ? this.auth.currentUser()?.id : undefined,
       })
       .subscribe({
         next: (issue) => {
@@ -160,6 +162,11 @@ export class IssueList implements OnInit {
         },
         error: () => this.caricamento.set(false),
       });
+  }
+
+  toggleSoloMie(): void {
+    this.soloMie.update((valore) => !valore);
+    this.caricaIssue();
   }
 
   apriIssue(issue: Issue): void {
@@ -196,9 +203,18 @@ export class IssueList implements OnInit {
   }
 
   nuovaIssue(): void {
+    const campiBase = ['titolo', 'descrizione', 'tipo', 'priorita', 'dataInizio', 'dataScadenza'];
+
     const ref = this.dialog.open<IssueFormDialog, IssueFormDialogData, DatiFormIssue>(IssueFormDialog, {
       width: '500px',
-      data: { titolo: 'Nuova issue', testoBottone: 'Crea issue' },
+      data: {
+        titolo: 'Nuova issue',
+        testoBottone: 'Crea issue',
+        // Estensione #3 (caso d'uso "Segnalare issue"): solo l'admin vede e
+        // può valorizzare il campo assegnatario in fase di creazione.
+        editableFields: this.isAdmin ? [...campiBase, 'assegnatario'] : campiBase,
+        membriTeam: this.isAdmin ? this.membriAssegnabili : [],
+      },
     });
 
     ref.afterClosed().subscribe((dati) => {

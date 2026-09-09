@@ -1,0 +1,32 @@
+<div class="pagina">
+  <h1 class="titolo-pagina">Issue assegnate a te</h1>
+
+  @if (caricamento()) {
+    <p class="stato-testo">Caricamento...</p>
+  } @else if (issue().length === 0) {
+    <p class="stato-testo">Nessuna issue ti è attualmente assegnata.</p>
+  } @else {
+    <table class="tabella-issue">
+      <thead>
+        <tr>
+          <th>Progetto</th>
+          <th>Titolo</th>
+          <th>Tipo</th>
+          <th>Stato</th>
+          <th>Priorità</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of issue(); track item.id) {
+          <tr (click)="apriIssue(item)">
+            <td>{{ item.progetto?.nome }}</td>
+            <td>{{ item.titolo }}</td>
+            <td><span class="badge badge-tipo">{{ item.tipo }}</span></td>
+            <td><span class="badge badge-stato-{{ item.stato }}">{{ item.stato.replace('_', ' ') }}</span></td>
+            <td>{{ item.priorita || '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

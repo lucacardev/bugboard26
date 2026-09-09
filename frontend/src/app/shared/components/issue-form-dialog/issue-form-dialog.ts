@@ -1,12 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { IssueForm, DatiFormIssue } from '../issue-form/issue-form';
+import { Utente } from '../../../core/models/utente.model';
 
 export interface IssueFormDialogData {
   titolo: string;
   testoBottone: string;
   editableFields?: string[];
   valoriIniziali?: Partial<DatiFormIssue>;
+  membriTeam?: Utente[];
 }
 
 @Component({

@@ -9,6 +9,10 @@ export interface Issue {
   dataInizio: string | null;
   dataScadenza: string | null;
   progettoId: number;
+  progetto?: {
+    id: number;
+    nome: string;
+  };
   segnalatoreId: number;
   assegnatarioId: number | null;
   tipo: TipoIssue;

@@ -1,0 +1,83 @@
+.pagina {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 48px) clamp(16px, 4vw, 32px);
+}
+
+.titolo-pagina {
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 700;
+  margin: 0 0 20px;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.stato-testo {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+}
+
+.tabella-issue {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: rgba(0, 0, 0, 0.5);
+    background: #f7f8fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  td {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  tr {
+    cursor: pointer;
+
+    &:hover td {
+      background: #f7f8fa;
+    }
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge-tipo {
+  background: #e8eaf6;
+  color: #3949ab;
+}
+
+.badge-stato-todo {
+  background: #eceff1;
+  color: #546e7a;
+}
+
+.badge-stato-in_progress {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.badge-stato-done {
+  background: #e8f5e9;
+  color: #2e7d32;
+}

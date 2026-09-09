@@ -4,6 +4,7 @@
     [editableFields]="data.editableFields ?? ['titolo','descrizione','tipo','priorita','dataInizio','dataScadenza']"
     [valoriIniziali]="data.valoriIniziali ?? {}"
     [testoBottone]="data.testoBottone"
+    [membriTeam]="data.membriTeam ?? []"
     (salva)="onSalva($event)"
     (annulla)="onAnnulla()">
   </app-issue-form>

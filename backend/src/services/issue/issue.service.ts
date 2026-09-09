@@ -35,6 +35,10 @@ export class IssueService {
     return this.issueRepository.findByProgetto(progettoId, filtri);
   }
 
+  async getIssueAssegnateA(utenteId: number): Promise<Issue[]> {
+    return this.issueRepository.findByAssegnatario(utenteId);
+  }
+
   async getIssue(id: number): Promise<Issue> {
     const issue = await this.issueRepository.findById(id);
     if (!issue) {

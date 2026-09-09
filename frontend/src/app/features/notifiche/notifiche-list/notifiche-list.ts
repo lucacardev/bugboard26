@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { NotificationService } from '../../../core/services/notification';
@@ -13,39 +13,19 @@ import { Notifica } from '../../../core/models/notifica.model';
 })
 export class NotificheList implements OnInit {
   private router = inject(Router);
-  private notificationService = inject(NotificationService);
   private issueService = inject(IssueService);
 
-  notifiche = signal<Notifica[]>([]);
-  caricamento = signal(true);
-
-  get nonLette(): number {
-    return this.notifiche().filter((n) => !n.letta).length;
-  }
+  // Stato condiviso col servizio (e quindi con il bollino della sidebar):
+  // niente più signal locale duplicato.
+  notificationService = inject(NotificationService);
 
   ngOnInit(): void {
-    this.caricaNotifiche();
-  }
-
-  caricaNotifiche(): void {
-    this.notificationService.getNotifiche().subscribe({
-      next: (notifiche) => {
-        this.notifiche.set(notifiche);
-        this.caricamento.set(false);
-      },
-      error: () => this.caricamento.set(false),
-    });
+    this.notificationService.caricaNotifiche();
   }
 
   apriNotifica(notifica: Notifica): void {
     if (!notifica.letta) {
-      this.notificationService.segnaComeLetta(notifica.id).subscribe({
-        next: (notificaAggiornata) => {
-          this.notifiche.update((lista) =>
-            lista.map((n) => (n.id === notificaAggiornata.id ? notificaAggiornata : n))
-          );
-        },
-      });
+      this.notificationService.segnaComeLetta(notifica.id);
     }
 
     // La notifica conosce solo l'issueId: la issue va recuperata per
