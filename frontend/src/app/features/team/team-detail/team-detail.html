@@ -21,7 +21,7 @@
         <select class="select-utente" [(ngModel)]="utenteDaAggiungere">
           <option value="" disabled selected>Seleziona un utente...</option>
           @for (utente of utentiDisponibili(); track utente.id) {
-            <option [value]="utente.id">{{ utente.username }} ({{ utente.email }})</option>
+            <option [value]="utente.id">{{ utente.username }} ({{ utente.email }}) · {{ utente.ruolo }}</option>
           }
         </select>
         <button class="bottone-conferma" (click)="confermaAggiunta()">Aggiungi</button>
