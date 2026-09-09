@@ -18,7 +18,7 @@ export class IssueController {
     try {
       const nuovaIssue = await this.issueService.segnalaIssue(tipo as TipoIssue, {
         titolo,
-        descrizione,
+        descrizione: descrizione || '',
         priorita,
         dataInizio,
         dataScadenza,
@@ -157,6 +157,39 @@ export class IssueController {
       }
       console.error('Errore durante il cambio di priorità della issue:', errore);
       res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante il cambio di priorità della issue' } });
+    }
+  };
+
+  /**
+   * Stesso perimetro di autorizzazione di stato/priorità (assegnatario o
+   * amministratore): nessun punto della traccia lo specifica per le date.
+   */
+  cambiaDate = async (req: Request, res: Response): Promise<void> => {
+    const { dataInizio, dataScadenza } = req.body;
+    try {
+      const id = Number(req.params.id);
+      const issueEsistente = await this.issueService.getIssue(id);
+
+      const autorizzato = req.utente!.ruolo === 'amministratore' || issueEsistente.assegnatarioId === req.utente!.id;
+      if (!autorizzato) {
+        res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Non sei l\'assegnatario di questa issue' } });
+        return;
+      }
+
+      const issueAggiornata = await this.issueService.cambiaDate(
+        id,
+        dataInizio ? new Date(dataInizio) : null,
+        dataScadenza ? new Date(dataScadenza) : null,
+        req.utente!.id
+      );
+      res.status(200).json(issueAggiornata);
+    } catch (errore) {
+      if (errore instanceof Error && errore.message === 'ISSUE_NON_TROVATA') {
+        res.status(404).json({ errore: { codice: 'ISSUE_NON_TROVATA', messaggio: 'Nessuna issue trovata con questo id' } });
+        return;
+      }
+      console.error('Errore durante il cambio di date della issue:', errore);
+      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante il cambio di date della issue' } });
     }
   };
 

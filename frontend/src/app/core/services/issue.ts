@@ -48,6 +48,14 @@ export class IssueService {
     );
   }
 
+  cambiaDate(issueId: number, dataInizio: string | null, dataScadenza: string | null) {
+    return this.http.patch<Issue>(
+      `${this.apiUrl}/issues/${issueId}/date`,
+      { dataInizio, dataScadenza },
+      { withCredentials: true }
+    );
+  }
+
   assegnaIssue(issueId: number, assegnatarioId: number) {
     return this.http.patch<Issue>(
       `${this.apiUrl}/issues/${issueId}/assegnatario`,
@@ -63,6 +71,7 @@ export class IssueService {
     priorita: string;
     dataInizio: string;
     dataScadenza: string;
+    assegnatarioId: number;
   }>) {
     return this.http.post<Issue>(`${this.apiUrl}/issues`, { ...dati, progettoId }, { withCredentials: true });
   }

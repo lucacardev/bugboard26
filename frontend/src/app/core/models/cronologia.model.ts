@@ -3,5 +3,9 @@ export interface VoceCronologia {
   descrizione: string;
   issueId: number;
   autoreId: number;
+  autore: {
+    id: number;
+    username: string;
+  };
   createdAt: string;
 }

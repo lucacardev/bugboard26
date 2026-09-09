@@ -86,7 +86,7 @@
             <select class="campo-laterale-input" [ngModel]="issueAttuale.stato" (ngModelChange)="cambiaStato($event)">
               <option value="todo">Todo</option>
               <option value="in_progress">In corso</option>
-              <option value="done">Completate</option>
+              <option value="done">Completata</option>
             </select>
           } @else {
             <span class="badge badge-stato-{{ issueAttuale.stato }}">{{ issueAttuale.stato.replace('_', ' ') }}</span>
@@ -120,6 +120,32 @@
             <span class="campo-laterale-valore">{{ issueAttuale.priorita || 'Nessuna' }}</span>
           }
         </div>
+
+        <div class="campo-laterale">
+          <label class="campo-laterale-label">Data inizio</label>
+          @if (puoModificareStato) {
+            <input
+              type="date"
+              class="campo-laterale-input"
+              [ngModel]="issueAttuale.dataInizio ? issueAttuale.dataInizio.substring(0, 10) : ''"
+              (ngModelChange)="aggiornaDataInizio($event)">
+          } @else {
+            <span class="campo-laterale-valore">{{ (issueAttuale.dataInizio | date: 'dd/MM/yyyy') || 'Nessuna' }}</span>
+          }
+        </div>
+
+        <div class="campo-laterale">
+          <label class="campo-laterale-label">Data scadenza</label>
+          @if (puoModificareStato) {
+            <input
+              type="date"
+              class="campo-laterale-input"
+              [ngModel]="issueAttuale.dataScadenza ? issueAttuale.dataScadenza.substring(0, 10) : ''"
+              (ngModelChange)="aggiornaDataScadenza($event)">
+          } @else {
+            <span class="campo-laterale-valore">{{ (issueAttuale.dataScadenza | date: 'dd/MM/yyyy') || 'Nessuna' }}</span>
+          }
+        </div>
       </aside>
     </div>
 
@@ -130,7 +156,7 @@
           @for (voce of cronologia(); track voce.id) {
             <div class="voce-cronologia">
               <span class="voce-testo">{{ voce.descrizione }}</span>
-              <span class="voce-data">{{ nomeMembro(voce.autoreId) }} — {{ voce.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+              <span class="voce-data">{{ voce.autore.username }} — {{ voce.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
             </div>
           } @empty {
             <p class="stato-testo">Nessuna voce di cronologia.</p>

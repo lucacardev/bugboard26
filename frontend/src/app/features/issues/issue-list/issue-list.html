@@ -115,6 +115,93 @@
                   placeholder="Che cosa occorre fare?"
                   (keydown.enter)="confermaCreazioneInline()"
                   (keydown.escape)="annullaCreazioneInline()">
+
+                @if (erroreCreazioneRapida) {
+                  <p class="errore-creazione-rapida">{{ erroreCreazioneRapida }}</p>
+                }
+
+                <div class="toolbar-rapida">
+                  <div class="icona-rapida-wrapper">
+                    <button
+                      type="button"
+                      class="icona-rapida"
+                      [title]="tipoNuovaIssue"
+                      (click)="toggleMenuRapido('tipo')">
+                      <mat-icon>{{ tipoIcone[tipoNuovaIssue] }}</mat-icon>
+                    </button>
+                    @if (menuRapidoAperto === 'tipo') {
+                      <div class="menu-rapido">
+                        @for (tipo of tipiIssue; track tipo) {
+                          <button type="button" class="menu-rapido-opzione" (click)="impostaTipoRapido(tipo)">
+                            <mat-icon>{{ tipoIcone[tipo] }}</mat-icon>
+                            {{ tipo }}
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <div class="icona-rapida-wrapper">
+                    <button
+                      type="button"
+                      class="icona-rapida"
+                      [title]="prioritaNuovaIssue || 'Nessuna priorità'"
+                      (click)="toggleMenuRapido('priorita')">
+                      <mat-icon [style.color]="prioritaColori[prioritaNuovaIssue]">flag</mat-icon>
+                    </button>
+                    @if (menuRapidoAperto === 'priorita') {
+                      <div class="menu-rapido">
+                        <button type="button" class="menu-rapido-opzione" (click)="impostaPrioritaRapida('')">Nessuna</button>
+                        <button type="button" class="menu-rapido-opzione" (click)="impostaPrioritaRapida('bassa')">Bassa</button>
+                        <button type="button" class="menu-rapido-opzione" (click)="impostaPrioritaRapida('media')">Media</button>
+                        <button type="button" class="menu-rapido-opzione" (click)="impostaPrioritaRapida('alta')">Alta</button>
+                      </div>
+                    }
+                  </div>
+
+                  <div class="icona-rapida-wrapper">
+                    <button
+                      type="button"
+                      class="icona-rapida"
+                      [class.icona-rapida-attiva]="scadenzaNuovaIssue"
+                      [title]="scadenzaNuovaIssue || 'Nessuna scadenza'"
+                      (click)="toggleMenuRapido('scadenza')">
+                      <mat-icon>calendar_today</mat-icon>
+                    </button>
+                    @if (menuRapidoAperto === 'scadenza') {
+                      <div class="menu-rapido menu-rapido-data">
+                        <input
+                          type="date"
+                          [ngModel]="scadenzaNuovaIssue"
+                          (ngModelChange)="impostaScadenzaRapida($event)">
+                      </div>
+                    }
+                  </div>
+
+                  @if (isAdmin) {
+                    <div class="icona-rapida-wrapper">
+                      <button
+                        type="button"
+                        class="icona-rapida"
+                        [class.icona-rapida-attiva]="assegnatarioNuovaIssue"
+                        [title]="nomeAssegnatarioRapido() || 'Non assegnata'"
+                        (click)="toggleMenuRapido('assegnatario')">
+                        <mat-icon>person</mat-icon>
+                      </button>
+                      @if (menuRapidoAperto === 'assegnatario') {
+                        <div class="menu-rapido">
+                          <button type="button" class="menu-rapido-opzione" (click)="impostaAssegnatarioRapido('')">Non assegnata</button>
+                          @for (membro of membriAssegnabili; track membro.id) {
+                            <button type="button" class="menu-rapido-opzione" (click)="impostaAssegnatarioRapido(membro.id.toString())">
+                              {{ membro.username }}
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+
                 <div class="creazione-azioni">
                   <button class="bottone-conferma" (click)="confermaCreazioneInline()">Crea</button>
                   <button class="bottone-annulla-inline" (click)="annullaCreazioneInline()">Annulla</button>

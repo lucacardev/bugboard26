@@ -46,7 +46,7 @@ export function definisciAssociazioni() {
 
   // Utente - VoceCronologia (effettua)
   Utente.hasMany(VoceCronologia, { foreignKey: 'autoreId' });
-  VoceCronologia.belongsTo(Utente, { foreignKey: 'autoreId' });
+  VoceCronologia.belongsTo(Utente, { foreignKey: 'autoreId', as: 'autore' });
 
   // Team - Utente (membro_di, N:N tramite MembroTeam esplicito)
   Team.belongsToMany(Utente, { through: MembroTeam, foreignKey: 'teamId', otherKey: 'utenteId', as: 'membri' });

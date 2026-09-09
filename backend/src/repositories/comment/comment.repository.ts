@@ -2,6 +2,7 @@
 
 import { CreationAttributes } from 'sequelize';
 import { Commento } from '../../models/Commento';
+import { Utente } from '../../models/Utente';
 
 export class CommentoRepository {
   async findById(id: number): Promise<Commento | null> {
@@ -12,6 +13,7 @@ export class CommentoRepository {
     return Commento.findAll({
       where: { issueId },
       order: [['createdAt', 'ASC']],
+      include: [{ model: Utente, as: 'autore', attributes: ['id', 'username'] }],
     });
   }
 

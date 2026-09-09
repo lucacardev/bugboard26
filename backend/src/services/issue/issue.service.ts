@@ -70,6 +70,18 @@ export class IssueService {
     return issueSalvata;
   }
 
+  async cambiaDate(id: number, dataInizio: Date | null, dataScadenza: Date | null, autoreId: number): Promise<Issue> {
+    const issue = await this.getIssue(id);
+    issue.cambiaDate(dataInizio, dataScadenza);
+    const issueSalvata = await this.issueRepository.save(issue);
+    await this.notifica({
+      issue: issueSalvata,
+      descrizione: 'Date della issue aggiornate',
+      autoreId,
+    });
+    return issueSalvata;
+  }
+
   async assegnaA(id: number, utenteId: number, autoreId: number): Promise<Issue> {
     const issue = await this.getIssue(id);
     const assegnatarioPrecedente = issue.assegnatarioId;

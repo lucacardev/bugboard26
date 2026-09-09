@@ -25,6 +25,11 @@ export class Issue extends Model<InferAttributes<Issue>, InferCreationAttributes
     this.priorita = nuovaPriorita;
   }
 
+  cambiaDate(dataInizio: Date | null, dataScadenza: Date | null): void {
+    this.dataInizio = dataInizio;
+    this.dataScadenza = dataScadenza;
+  }
+
   assegnaA(utenteId: number): void {
     this.assegnatarioId = utenteId;
   }
@@ -35,7 +40,7 @@ Issue.init(
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     tipo: { type: DataTypes.ENUM('bug', 'question', 'documentation', 'feature'), allowNull: false },
     titolo: { type: DataTypes.STRING, allowNull: false },
-    descrizione: { type: DataTypes.TEXT, allowNull: true }, // <-- da rivedere: vedi nota sotto
+    descrizione: { type: DataTypes.TEXT, allowNull: false },
     stato: { type: DataTypes.ENUM('todo', 'in_progress', 'done'), allowNull: false, defaultValue: 'todo' },
     priorita: { type: DataTypes.STRING, allowNull: true },
     dataInizio: { type: DataTypes.DATE, allowNull: true },

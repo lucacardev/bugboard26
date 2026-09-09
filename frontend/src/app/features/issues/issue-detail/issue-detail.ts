@@ -148,6 +148,28 @@ export class IssueDetail implements OnInit {
     });
   }
 
+  aggiornaDataInizio(valore: string): void {
+    const issueAttuale = this.issue();
+    if (!issueAttuale) return;
+    this.salvaDate(valore || null, issueAttuale.dataScadenza);
+  }
+
+  aggiornaDataScadenza(valore: string): void {
+    const issueAttuale = this.issue();
+    if (!issueAttuale) return;
+    this.salvaDate(issueAttuale.dataInizio, valore || null);
+  }
+
+  private salvaDate(dataInizio: string | null, dataScadenza: string | null): void {
+    this.issueService.cambiaDate(this.issueId, dataInizio, dataScadenza).subscribe({
+      next: (issueAggiornata) => {
+        this.issue.set(issueAggiornata);
+        this.caricaCronologia();
+      },
+      error: () => alert('Non sei autorizzato a modificare le date di questa issue'),
+    });
+  }
+
   assegna(assegnatarioId: string): void {
     if (!assegnatarioId) return;
     this.issueService.assegnaIssue(this.issueId, Number(assegnatarioId)).subscribe({

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, HostListener } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -7,8 +7,10 @@ import { CdkDropList, CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem }
 import { IssueService } from '../../../core/services/issue';
 import { ProgettoService } from '../../../core/services/progetto';
 import { AuthService } from '../../../core/services/auth';
+import { TeamService } from '../../../core/services/team';
 import { Issue, TipoIssue, StatoIssue } from '../../../core/models/issue.model';
 import { Progetto } from '../../../core/models/progetto.model';
+import { Utente } from '../../../core/models/utente.model';
 import { IssueFormDialog, IssueFormDialogData } from '../../../shared/components/issue-form-dialog/issue-form-dialog';
 import { DatiFormIssue } from '../../../shared/components/issue-form/issue-form';
 import { Paginator } from '../../../shared/components/paginator/paginator';
@@ -18,6 +20,8 @@ interface ColonnaBoard {
   titolo: string;
   dati: () => Issue[];
 }
+
+type MenuRapido = 'tipo' | 'priorita' | 'scadenza' | 'assegnatario' | null;
 
 @Component({
   selector: 'app-issue-list',
@@ -30,6 +34,7 @@ export class IssueList implements OnInit {
   private router = inject(Router);
   private issueService = inject(IssueService);
   private progettoService = inject(ProgettoService);
+  private teamService = inject(TeamService);
   private auth = inject(AuthService);
   private dialog = inject(MatDialog);
 
@@ -37,11 +42,20 @@ export class IssueList implements OnInit {
     return this.auth.currentUser()?.ruolo === 'stakeholder';
   }
 
+  get isAdmin(): boolean {
+    return this.auth.currentUser()?.ruolo === 'amministratore';
+  }
+
   progettoId = Number(this.route.snapshot.paramMap.get('progettoId'));
   progetto = signal<Progetto | null>(null);
   issue = signal<Issue[]>([]);
   caricamento = signal(true);
   vista = signal<'elenco' | 'board'>('elenco');
+
+  // Membri del team, usati solo per il picker assegnatario nella creazione
+  // rapida (visibile solo all'admin, coerente con il dropdown Assegnatario
+  // già admin-only in IssueDetail).
+  membriTeam = signal<Utente[]>([]);
 
   filtroTipo: TipoIssue | '' = '';
   filtroStato: StatoIssue | '' = '';
@@ -63,6 +77,30 @@ export class IssueList implements OnInit {
 
   colonnaCreazioneAttiva: StatoIssue | null = null;
   titoloNuovaIssue = '';
+  erroreCreazioneRapida = '';
+
+  // Stato della toolbar a icone della creazione rapida (stile Jira)
+  tipoNuovaIssue: TipoIssue = 'bug';
+  prioritaNuovaIssue = '';
+  scadenzaNuovaIssue = '';
+  assegnatarioNuovaIssue = '';
+  menuRapidoAperto: MenuRapido = null;
+
+  readonly tipiIssue: TipoIssue[] = ['bug', 'question', 'documentation', 'feature'];
+
+  tipoIcone: Record<TipoIssue, string> = {
+    bug: 'bug_report',
+    question: 'help_outline',
+    documentation: 'description',
+    feature: 'lightbulb',
+  };
+
+  prioritaColori: Record<string, string> = {
+    '': 'rgba(0, 0, 0, 0.35)',
+    bassa: '#2e7d32',
+    media: '#e65100',
+    alta: '#c62828',
+  };
 
   paginaCorrente = signal(1);
   dimensionePagina = 10;
@@ -92,7 +130,14 @@ export class IssueList implements OnInit {
 
   ngOnInit(): void {
     this.progettoService.getProgetto(this.progettoId).subscribe({
-      next: (progetto) => this.progetto.set(progetto),
+      next: (progetto) => {
+        this.progetto.set(progetto);
+        if (this.isAdmin) {
+          this.teamService.getMembri(progetto.team.id).subscribe({
+            next: (membri) => this.membriTeam.set(membri),
+          });
+        }
+      },
     });
     this.caricaIssue();
   }
@@ -168,25 +213,93 @@ export class IssueList implements OnInit {
   apriCreazioneInline(): void {
     this.colonnaCreazioneAttiva = 'todo';
     this.titoloNuovaIssue = '';
+    this.tipoNuovaIssue = 'bug';
+    this.prioritaNuovaIssue = '';
+    this.scadenzaNuovaIssue = '';
+    this.assegnatarioNuovaIssue = '';
+    this.menuRapidoAperto = null;
+    this.erroreCreazioneRapida = '';
   }
 
   annullaCreazioneInline(): void {
     this.colonnaCreazioneAttiva = null;
     this.titoloNuovaIssue = '';
+    this.menuRapidoAperto = null;
+    this.erroreCreazioneRapida = '';
+  }
+
+  toggleMenuRapido(nome: MenuRapido): void {
+    this.menuRapidoAperto = this.menuRapidoAperto === nome ? null : nome;
+  }
+
+  // Chiude il menu rapido aperto se si clicca in un punto qualunque della
+  // pagina che non sia dentro il wrapper dell'icona/menu stesso.
+  @HostListener('document:click', ['$event'])
+  chiudiMenuRapidoSuClickEsterno(event: MouseEvent): void {
+    if (!this.menuRapidoAperto) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('.icona-rapida-wrapper')) {
+      this.menuRapidoAperto = null;
+    }
+  }
+
+  impostaTipoRapido(tipo: TipoIssue): void {
+    this.tipoNuovaIssue = tipo;
+    this.menuRapidoAperto = null;
+  }
+
+  impostaPrioritaRapida(priorita: string): void {
+    this.prioritaNuovaIssue = priorita;
+    this.menuRapidoAperto = null;
+  }
+
+  impostaScadenzaRapida(valore: string): void {
+    this.scadenzaNuovaIssue = valore;
+    this.menuRapidoAperto = null;
+  }
+
+  impostaAssegnatarioRapido(valore: string): void {
+    this.assegnatarioNuovaIssue = valore;
+    this.menuRapidoAperto = null;
+  }
+
+  nomeAssegnatarioRapido(): string {
+    const membro = this.membriTeam().find((m) => m.id === Number(this.assegnatarioNuovaIssue));
+    return membro?.username ?? '';
+  }
+
+  // Uno stakeholder non è un lavoratore assegnabile (punto 15, sola lettura),
+  // stesso filtro già applicato in IssueDetail.
+  get membriAssegnabili(): Utente[] {
+    return this.membriTeam().filter((m) => m.ruolo !== 'stakeholder');
   }
 
   confermaCreazioneInline(): void {
     const titolo = this.titoloNuovaIssue.trim();
     if (!titolo) {
-      this.annullaCreazioneInline();
+      this.erroreCreazioneRapida = 'Inserisci un titolo per la issue';
       return;
     }
+    this.erroreCreazioneRapida = '';
 
-    this.issueService.creaIssue(this.progettoId, { titolo, tipo: 'bug' }).subscribe({
-      next: () => {
-        this.annullaCreazioneInline();
-        this.caricaIssue();
-      },
-    });
+    // Data di inizio impostata di default ad oggi, non richiesta esplicitamente
+    // nella toolbar rapida (solo la scadenza è un campo a scelta dell'utente).
+    const oggi = new Date().toISOString().substring(0, 10);
+
+    this.issueService
+      .creaIssue(this.progettoId, {
+        titolo,
+        tipo: this.tipoNuovaIssue,
+        priorita: this.prioritaNuovaIssue || undefined,
+        dataInizio: oggi,
+        dataScadenza: this.scadenzaNuovaIssue || undefined,
+        assegnatarioId: this.assegnatarioNuovaIssue ? Number(this.assegnatarioNuovaIssue) : undefined,
+      })
+      .subscribe({
+        next: () => {
+          this.annullaCreazioneInline();
+          this.caricaIssue();
+        },
+      });
   }
 }
