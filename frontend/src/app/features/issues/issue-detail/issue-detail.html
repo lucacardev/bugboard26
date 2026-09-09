@@ -48,6 +48,36 @@
           }
         </div>
 
+        <section class="sezione sezione-allegati">
+          <h2 class="sezione-titolo">Allegati</h2>
+
+          <div class="lista-allegati">
+            @for (allegato of allegati(); track allegato.id) {
+              <div class="allegato-riga">
+                <button type="button" class="allegato-nome" (click)="scaricaAllegato(allegato)">
+                  {{ allegato.nomeFile }}
+                </button>
+                <span class="allegato-dimensione">{{ formattaDimensione(allegato.dimensione) }}</span>
+                @if (isAdmin) {
+                  <button type="button" class="allegato-elimina" (click)="eliminaAllegatoFile(allegato)">&times;</button>
+                }
+              </div>
+            } @empty {
+              <p class="stato-testo">Nessun allegato.</p>
+            }
+          </div>
+
+          @if (!isStakeholder) {
+            <label class="bottone-allegato" [class.disabilitato]="uploadInCorso()">
+              {{ uploadInCorso() ? 'Caricamento...' : '+ Allegato' }}
+              <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" (change)="onFileSelezionato($event)" [disabled]="uploadInCorso()">
+            </label>
+            @if (erroreAllegato()) {
+              <p class="errore-allegato">{{ erroreAllegato() }}</p>
+            }
+          }
+        </section>
+
         <section class="sezione sezione-commenti">
           <h2 class="sezione-titolo">Commenti</h2>
 
@@ -55,7 +85,7 @@
             @for (commento of commenti(); track commento.id) {
               <div class="commento" [class.commento-mio]="eMio(commento.autoreId)">
                 <div class="commento-intestazione">
-                  <span class="commento-autore">{{ nomeAutore(commento.autoreId) }}</span>
+                  <span class="commento-autore">{{ nomeAutore(commento) }}</span>
                   <span class="commento-data">{{ commento.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
                 </div>
                 <p class="commento-testo">{{ commento.testo }}</p>
@@ -97,7 +127,7 @@
           <label class="campo-laterale-label">Assegnatario</label>
           @if (isAdmin) {
             <select class="campo-laterale-input" [ngModel]="issueAttuale.assegnatarioId" (ngModelChange)="assegna($event)">
-              <option [value]="null">Non assegnata</option>
+              <option [ngValue]="null">Non assegnata</option>
               @for (membro of membriAssegnabili; track membro.id) {
                 <option [value]="membro.id">{{ membro.username }}</option>
               }
@@ -111,7 +141,7 @@
           <label class="campo-laterale-label">Priorità</label>
           @if (puoModificareStato) {
             <select class="campo-laterale-input" [ngModel]="issueAttuale.priorita" (ngModelChange)="cambiaPriorita($event)">
-              <option [value]="null">Nessuna</option>
+              <option [ngValue]="null">Nessuna</option>
               <option value="bassa">Bassa</option>
               <option value="media">Media</option>
               <option value="alta">Alta</option>

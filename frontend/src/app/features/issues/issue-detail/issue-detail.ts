@@ -9,14 +9,18 @@ import { TeamService } from '../../../core/services/team';
 import { CommentoService } from '../../../core/services/comment';
 import { CronologiaService } from '../../../core/services/cronologia';
 import { EtichettaService } from '../../../core/services/etichetta';
+import { AttachmentService } from '../../../core/services/attachment';
 import { Issue, StatoIssue } from '../../../core/models/issue.model';
 import { Progetto } from '../../../core/models/progetto.model';
 import { Utente } from '../../../core/models/utente.model';
 import { Commento } from '../../../core/models/commento.model';
 import { VoceCronologia } from '../../../core/models/cronologia.model';
 import { Etichetta } from '../../../core/models/etichetta.model';
+import { Allegato } from '../../../core/models/allegato.model';
 
 const COLORI_ETICHETTA = ['#3949ab', '#e65100', '#2e7d32', '#c62828', '#6a1b9a', '#00838f'];
+const TIPI_MIME_CONSENTITI = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
+const DIMENSIONE_MASSIMA_BYTES = 10 * 1024 * 1024; // 10 MB, stesso limite del backend
 
 @Component({
   selector: 'app-issue-detail',
@@ -34,6 +38,7 @@ export class IssueDetail implements OnInit {
   private commentoService = inject(CommentoService);
   private cronologiaService = inject(CronologiaService);
   private etichettaService = inject(EtichettaService);
+  private attachmentService = inject(AttachmentService);
 
   progettoId = Number(this.route.snapshot.paramMap.get('progettoId'));
   issueId = Number(this.route.snapshot.paramMap.get('issueId'));
@@ -50,6 +55,10 @@ export class IssueDetail implements OnInit {
   aggiuntaEtichettaAttiva = false;
   testoNuovaEtichetta = '';
 
+  allegati = signal<Allegato[]>([]);
+  uploadInCorso = signal(false);
+  erroreAllegato = signal('');
+
   nuovoCommento = '';
 
   ngOnInit(): void {
@@ -59,6 +68,7 @@ export class IssueDetail implements OnInit {
       this.caricaCronologia();
     }
     this.caricaEtichetteIssue();
+    this.caricaAllegati();
   }
 
   caricaIssue(): void {
@@ -97,6 +107,12 @@ export class IssueDetail implements OnInit {
   caricaEtichetteIssue(): void {
     this.etichettaService.getEtichetteIssue(this.issueId).subscribe({
       next: (etichette) => this.etichetteIssue.set(etichette),
+    });
+  }
+
+  caricaAllegati(): void {
+    this.attachmentService.getAllegatiIssue(this.issueId).subscribe({
+      next: (allegati) => this.allegati.set(allegati),
     });
   }
 
@@ -238,16 +254,87 @@ export class IssueDetail implements OnInit {
     });
   }
 
+  onFileSelezionato(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = ''; // permette di riselezionare lo stesso file una seconda volta
+    if (!file) return;
+
+    this.erroreAllegato.set('');
+
+    // Validazione lato client: stesso vincolo del backend, per un feedback
+    // immediato senza dover aspettare il giro di rete (il backend resta
+    // comunque l'unica fonte di verità, questo è solo un anticipo di UX).
+    if (!TIPI_MIME_CONSENTITI.includes(file.type)) {
+      this.erroreAllegato.set('Formato non supportato. Sono ammesse solo immagini (PNG, JPEG, GIF, WEBP).');
+      return;
+    }
+    if (file.size > DIMENSIONE_MASSIMA_BYTES) {
+      this.erroreAllegato.set('Il file supera la dimensione massima consentita di 10 MB.');
+      return;
+    }
+
+    this.uploadInCorso.set(true);
+
+    this.attachmentService.richiediUploadUrl(this.issueId, file.name, file.type).subscribe({
+      next: ({ uploadUrl, urlKey }) => {
+        this.attachmentService.caricaSuS3(uploadUrl, file).subscribe({
+          next: () => {
+            this.attachmentService.confermaCaricamento(urlKey, file.name, this.issueId).subscribe({
+              next: () => {
+                this.uploadInCorso.set(false);
+                this.caricaAllegati();
+              },
+              error: () => {
+                this.uploadInCorso.set(false);
+                this.erroreAllegato.set('Caricamento su S3 riuscito ma la conferma al server è fallita.');
+              },
+            });
+          },
+          error: () => {
+            this.uploadInCorso.set(false);
+            this.erroreAllegato.set('Errore durante il caricamento del file.');
+          },
+        });
+      },
+      error: () => {
+        this.uploadInCorso.set(false);
+        this.erroreAllegato.set('Errore durante la richiesta di caricamento.');
+      },
+    });
+  }
+
+  scaricaAllegato(allegato: Allegato): void {
+    this.attachmentService.richiediDownloadUrl(allegato.id).subscribe({
+      next: ({ downloadUrl }) => window.open(downloadUrl, '_blank'),
+    });
+  }
+
+  eliminaAllegatoFile(allegato: Allegato): void {
+    if (!confirm(`Eliminare l'allegato "${allegato.nomeFile}"?`)) return;
+    this.attachmentService.eliminaAllegato(allegato.id).subscribe({
+      next: () => this.caricaAllegati(),
+    });
+  }
+
+  formattaDimensione(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
   nomeMembro(utenteId: number | null): string {
     if (!utenteId) return 'Non assegnata';
     return this.nomeUtenteDaId(utenteId);
   }
 
   // Come nomeMembro, ma per l'autore di un commento: mostra "Tu" se coincide
-  // con l'utente attualmente autenticato, altrimenti il nome del membro (o
-  // il fallback "Utente #N" se non fa più parte del team, es. rimosso in seguito).
-  nomeAutore(autoreId: number): string {
-    return this.eMio(autoreId) ? 'Tu' : this.nomeUtenteDaId(autoreId);
+  // con l'utente attualmente autenticato, altrimenti l'username reale incluso
+  // dal backend (fallback alla lookup tra i membri solo per sicurezza, es. se
+  // per qualche motivo la risposta non include l'autore).
+  nomeAutore(commento: Commento): string {
+    if (this.eMio(commento.autoreId)) return 'Tu';
+    return commento.autore?.username ?? this.nomeUtenteDaId(commento.autoreId);
   }
 
   // Usato anche dal template per lo stile distintivo dei propri commenti.

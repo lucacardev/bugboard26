@@ -32,7 +32,7 @@
   @if (campoEditabile('assegnatario')) {
     <label class="campo-label">Assegnatario</label>
     <select class="campo-input" [(ngModel)]="dati.assegnatarioId" name="assegnatarioId">
-      <option [value]="undefined">Non assegnata</option>
+      <option [ngValue]="undefined">Non assegnata</option>
       @for (membro of membriTeam(); track membro.id) {
         <option [value]="membro.id">{{ membro.username }}</option>
       }

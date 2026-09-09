@@ -34,7 +34,7 @@ export function definisciAssociazioni() {
 
   // Utente - Commento (scrive)
   Utente.hasMany(Commento, { foreignKey: 'autoreId' });
-  Commento.belongsTo(Utente, { foreignKey: 'autoreId' });
+  Commento.belongsTo(Utente, { foreignKey: 'autoreId', as: 'autore' });
 
   // Issue - Allegato (composizione 1:N)
   Issue.hasMany(Allegato, { foreignKey: 'issueId', onDelete: 'CASCADE' });

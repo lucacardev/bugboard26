@@ -8,6 +8,8 @@ import { CronologiaRepository } from '../repositories/cronologia/cronologia.repo
 import { CronologiaService } from '../services/cronologia/cronologia.service';
 import { CronologiaObserver } from '../services/cronologia/cronologia.observer';
 import { NotificationObserver } from '../services/notification/notification.observer';
+import { TeamRepository } from '../repositories/team/team.repository';
+import { UserRepository } from '../repositories/user/user.repository';
 import { autenticazione, soloAmministratore, vietaStakeholder } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -18,7 +20,7 @@ const issueService = new IssueService(issueRepository);
 const cronologiaRepository = new CronologiaRepository();
 const cronologiaService = new CronologiaService(cronologiaRepository);
 issueService.attach(new CronologiaObserver(cronologiaService));
-issueService.attach(new NotificationObserver());
+issueService.attach(new NotificationObserver(new TeamRepository(), new UserRepository()));
 
 const issueController = new IssueController(issueService);
 
