@@ -60,7 +60,7 @@ export class IssueService {
     );
   }
 
-  assegnaIssue(issueId: number, assegnatarioId: number) {
+  assegnaIssue(issueId: number, assegnatarioId: number | null) {
     return this.http.patch<Issue>(
       `${this.apiUrl}/issues/${issueId}/assegnatario`,
       { assegnatarioId },

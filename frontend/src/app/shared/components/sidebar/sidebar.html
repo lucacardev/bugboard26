@@ -4,7 +4,7 @@
       <mat-icon>folder_open</mat-icon>
       <span>Progetti</span>
     </a>
-    @if (!isStakeholder) {
+    @if (!isStakeholder && !isAdmin) {
       <a routerLink="/issue-assegnate" routerLinkActive="attivo" class="nav-item" (click)="layout.chiudiSidebar()">
         <mat-icon>assignment_ind</mat-icon>
         <span>Issue assegnate</span>

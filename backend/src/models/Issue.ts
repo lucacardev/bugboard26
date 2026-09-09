@@ -30,7 +30,7 @@ export class Issue extends Model<InferAttributes<Issue>, InferCreationAttributes
     this.dataScadenza = dataScadenza;
   }
 
-  assegnaA(utenteId: number): void {
+  assegnaA(utenteId: number | null): void {
     this.assegnatarioId = utenteId;
   }
 }

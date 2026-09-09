@@ -1,5 +1,7 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { AuthService } from '../../../core/services/auth';
@@ -31,6 +33,8 @@ const DIMENSIONE_MASSIMA_BYTES = 10 * 1024 * 1024; // 10 MB, stesso limite del b
 export class IssueDetail implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private location = inject(Location);
+  private destroyRef = inject(DestroyRef);
   private auth = inject(AuthService);
   private issueService = inject(IssueService);
   private progettoService = inject(ProgettoService);
@@ -40,8 +44,17 @@ export class IssueDetail implements OnInit {
   private etichettaService = inject(EtichettaService);
   private attachmentService = inject(AttachmentService);
 
-  progettoId = Number(this.route.snapshot.paramMap.get('progettoId'));
-  issueId = Number(this.route.snapshot.paramMap.get('issueId'));
+  // NOTA: progettoId/issueId NON sono più letti una sola volta via
+  // `.snapshot` al costruttore. Angular, di default (BaseRouteReuseStrategy),
+  // riusa la stessa istanza di componente quando due navigazioni risolvono
+  // allo stesso routeConfig (stessa "forma" di rotta, es.
+  // 'progetti/:progettoId/issues/:issueId') e cambiano solo i parametri: in
+  // quel caso ngOnInit NON viene richiamato di nuovo, quindi uno snapshot
+  // letto una sola volta resterebbe bloccato sui valori della prima issue
+  // aperta. Ci si sottoscrive quindi a `paramMap` (Observable) e si
+  // ricaricano tutti i dati ogni volta che cambia.
+  progettoId = 0;
+  issueId = 0;
 
   issue = signal<Issue | null>(null);
   progetto = signal<Progetto | null>(null);
@@ -62,10 +75,25 @@ export class IssueDetail implements OnInit {
   nuovoCommento = '';
 
   ngOnInit(): void {
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      this.progettoId = Number(params.get('progettoId'));
+      this.issueId = Number(params.get('issueId'));
+      this.caricaTutto();
+    });
+  }
+
+  // Punto d'ingresso unico per (ri)caricare tutti i dati della issue
+  // corrente: chiamato sia al primo ingresso sia ogni volta che
+  // progettoId/issueId cambiano perché il componente è stato riusato.
+  private caricaTutto(): void {
+    this.caricamento.set(true);
+    this.issue.set(null);
     this.caricaIssue();
     this.caricaCommenti();
     if (!this.isStakeholder) {
       this.caricaCronologia();
+    } else {
+      this.cronologia.set([]);
     }
     this.caricaEtichetteIssue();
     this.caricaAllegati();
@@ -186,9 +214,9 @@ export class IssueDetail implements OnInit {
     });
   }
 
-  assegna(assegnatarioId: string): void {
-    if (!assegnatarioId) return;
-    this.issueService.assegnaIssue(this.issueId, Number(assegnatarioId)).subscribe({
+  assegna(assegnatarioId: string | number | null): void {
+    const valore = assegnatarioId === null || assegnatarioId === '' ? null : Number(assegnatarioId);
+    this.issueService.assegnaIssue(this.issueId, valore).subscribe({
       next: (issueAggiornata) => {
         this.issue.set(issueAggiornata);
         this.caricaCronologia();
@@ -347,7 +375,9 @@ export class IssueDetail implements OnInit {
     return membro?.username ?? `Utente #${utenteId}`;
   }
 
+  // Il "torna indietro" ora usa la history reale del browser (stesso
+  // comportamento del tasto Indietro).
   torna(): void {
-    this.router.navigate(['/progetti', this.progettoId, 'issues']);
+    this.location.back();
   }
 }

@@ -86,14 +86,14 @@ export class IssueService {
     return issueSalvata;
   }
 
-  async assegnaA(id: number, utenteId: number, autoreId: number): Promise<Issue> {
+  async assegnaA(id: number, utenteId: number | null, autoreId: number): Promise<Issue> {
     const issue = await this.getIssue(id);
     const assegnatarioPrecedente = issue.assegnatarioId;
     issue.assegnaA(utenteId);
     const issueSalvata = await this.issueRepository.save(issue);
     await this.notifica({
       issue: issueSalvata,
-      descrizione: `Issue assegnata all'utente #${utenteId}`,
+      descrizione: utenteId === null ? 'Issue de-assegnata' : `Issue assegnata all'utente #${utenteId}`,
       autoreId,
       assegnatarioPrecedente,
     });

@@ -1,4 +1,6 @@
 <div class="pagina">
+  <button class="link-torna" (click)="torna()">&larr; Indietro</button>
+
   <div class="intestazione">
     <h1 class="titolo-pagina">Notifiche</h1>
     @if (notificationService.nonLette() > 0) {

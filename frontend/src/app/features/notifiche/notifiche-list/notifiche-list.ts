@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import { NotificationService } from '../../../core/services/notification';
 import { IssueService } from '../../../core/services/issue';
@@ -13,6 +14,7 @@ import { Notifica } from '../../../core/models/notifica.model';
 })
 export class NotificheList implements OnInit {
   private router = inject(Router);
+  private location = inject(Location);
   private issueService = inject(IssueService);
 
   // Stato condiviso col servizio (e quindi con il bollino della sidebar):
@@ -35,5 +37,11 @@ export class NotificheList implements OnInit {
         next: (issue) => this.router.navigate(['/progetti', issue.progettoId, 'issues', issue.id]),
       });
     }
+  }
+
+  // Coerente con le altre pagine (issue-list, issue-detail, ecc.), tutte
+  // dotate di un "torna indietro": qui mancava del tutto.
+  torna(): void {
+    this.location.back();
   }
 }

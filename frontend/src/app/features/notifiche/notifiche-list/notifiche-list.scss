@@ -4,6 +4,20 @@
   padding: clamp(24px, 5vw, 48px) clamp(16px, 4vw, 32px);
 }
 
+.link-torna {
+  border: none;
+  background: none;
+  color: var(--colore-primario-chiaro);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .intestazione {
   display: flex;
   align-items: center;

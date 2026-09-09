@@ -22,6 +22,7 @@ export class TeamDetail implements OnInit {
   teamId = Number(this.route.snapshot.paramMap.get('teamId'));
   progettoIdOrigine = this.route.snapshot.queryParamMap.get('progettoId');
 
+  nomeTeam = signal<string | null>(null);
   membri = signal<Utente[]>([]);
   tuttiGliUtenti = signal<Utente[]>([]);
   caricamento = signal(true);
@@ -44,6 +45,9 @@ export class TeamDetail implements OnInit {
   }
 
   ngOnInit(): void {
+    this.teamService.getTeam(this.teamId).subscribe({
+      next: (team) => this.nomeTeam.set(team.nome),
+    });
     this.caricaMembri();
     if (this.isAdmin) {
       this.userService.getTuttiGliUtenti().subscribe({

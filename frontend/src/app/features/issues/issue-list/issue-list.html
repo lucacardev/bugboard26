@@ -20,12 +20,12 @@
   </div>
 
   <div class="tab-vista">
-    <button class="tab" [class.attivo]="vista() === 'elenco'" (click)="vista.set('elenco')">Elenco</button>
-    <button class="tab" [class.attivo]="vista() === 'board'" (click)="vista.set('board')">Board</button>
+    <button class="tab" [class.attivo]="vista() === 'elenco'" (click)="cambiaVista('elenco')">Elenco</button>
+    <button class="tab" [class.attivo]="vista() === 'board'" (click)="cambiaVista('board')">Board</button>
   </div>
 
   <div class="filtri">
-    @if (!isStakeholder) {
+    @if (!isStakeholder && !isAdmin) {
       <button
         type="button"
         class="filtro-toggle"
@@ -174,12 +174,13 @@
                       type="button"
                       class="icona-rapida"
                       [class.icona-rapida-attiva]="scadenzaNuovaIssue"
-                      [title]="scadenzaNuovaIssue || 'Nessuna scadenza'"
+                      [title]="'Data di scadenza (termine): ' + (scadenzaNuovaIssue || 'nessuna')"
                       (click)="toggleMenuRapido('scadenza')">
                       <mat-icon>calendar_today</mat-icon>
                     </button>
                     @if (menuRapidoAperto === 'scadenza') {
                       <div class="menu-rapido menu-rapido-data">
+                        <span class="menu-rapido-etichetta">Data di scadenza</span>
                         <input
                           type="date"
                           [ngModel]="scadenzaNuovaIssue"

@@ -123,13 +123,17 @@ export class IssueController {
   /** Punto 4 traccia: assegnazione riservata all'Amministratore (soloAmministratore in route). */
   assegnaIssue = async (req: Request, res: Response): Promise<void> => {
     const { assegnatarioId } = req.body;
-    if (!assegnatarioId) {
+    if (assegnatarioId === undefined) {
         res.status(400).json({ errore: { codice: 'CAMPI_OBBLIGATORI_MANCANTI', messaggio: 'Campo obbligatorio mancante: assegnatarioId' } });
+        return;
+    }
+    if (assegnatarioId !== null && (typeof assegnatarioId !== 'number' || assegnatarioId <= 0)) {
+        res.status(400).json({ errore: { codice: 'ASSEGNATARIO_NON_VALIDO', messaggio: 'assegnatarioId deve essere un numero positivo oppure null' } });
         return;
     }
     try {
         const id = Number(req.params.id);
-        const issueAggiornata = await this.issueService.assegnaA(id, Number(assegnatarioId), req.utente!.id);
+        const issueAggiornata = await this.issueService.assegnaA(id, assegnatarioId, req.utente!.id);
         res.status(200).json(issueAggiornata);
     } catch (errore) {
         if (errore instanceof Error && errore.message === 'ISSUE_NON_TROVATA') {

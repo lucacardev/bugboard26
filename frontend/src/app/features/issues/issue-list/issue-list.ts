@@ -50,7 +50,9 @@ export class IssueList implements OnInit {
   progetto = signal<Progetto | null>(null);
   issue = signal<Issue[]>([]);
   caricamento = signal(true);
-  vista = signal<'elenco' | 'board'>('elenco');
+  vista = signal<'elenco' | 'board'>(
+    this.route.snapshot.queryParamMap.get('vista') === 'board' ? 'board' : 'elenco'
+  );
 
   // Membri del team, usati solo per il picker assegnatario nella creazione
   // rapida (visibile solo all'admin, coerente con il dropdown Assegnatario
@@ -180,6 +182,18 @@ export class IssueList implements OnInit {
 
   torna(): void {
     this.router.navigate(['/progetti']);
+  }
+
+  // replaceUrl: true evita di accumulare una entry di history per ogni
+  // click sul tab.
+  cambiaVista(nuovaVista: 'elenco' | 'board'): void {
+    this.vista.set(nuovaVista);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { vista: nuovaVista },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   drop(event: CdkDragDrop<Issue[]>, nuovoStato: StatoIssue): void {
