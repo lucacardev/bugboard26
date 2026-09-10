@@ -1,0 +1,19 @@
+# Analogo al Dockerfile.dev del backend: nessun build statico, il
+# dev-server Angular gira dentro al container e serve direttamente il
+# codice sorgente montato da host, ricompilando a ogni salvataggio.
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --legacy-peer-deps
+
+EXPOSE 4200
+
+# --host 0.0.0.0: senza questo, ng serve ascolta solo su localhost DENTRO
+# al container, irraggiungibile dall'host anche con la porta pubblicata.
+# --poll 2000: gli eventi di modifica file nativi del sistema operativo non
+# attraversano sempre in modo affidabile un bind mount Docker (soprattutto
+# da host Windows/macOS) — il polling ogni 2 secondi garantisce che i
+# cambiamenti vengano comunque rilevati.
+CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--port", "4200", "--poll", "2000"]

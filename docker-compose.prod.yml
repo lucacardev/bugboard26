@@ -1,0 +1,38 @@
+# Estende docker-compose.yml (infrastruttura) aggiungendo backend e frontend
+# containerizzati in modalità produzione — build multi-stage, nessun
+# hot-reload, pensato per una demo completa "un comando e funziona tutto"
+# o come base per un deploy reale.
+#
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+#
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: bugboard26-backend
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: bugboard26
+      DB_USER: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: bugboard26-frontend
+    depends_on:
+      - backend
+    ports:
+      - "4200:80"

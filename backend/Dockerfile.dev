@@ -1,0 +1,16 @@
+# Immagine di sviluppo: a differenza del Dockerfile "prod" (multi-stage,
+# solo codice compilato), qui installiamo TUTTE le dipendenze (incluse le
+# devDependencies: ts-node-dev, sequelize-cli, jest) e non copiamo il
+# codice sorgente nell'immagine — arriva a runtime tramite bind mount da
+# docker-compose.dev.yml, così ogni modifica sul host si riflette subito
+# nel container senza dover ricostruire l'immagine.
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

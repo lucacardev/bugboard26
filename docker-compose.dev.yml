@@ -1,0 +1,68 @@
+# Estende docker-compose.yml (infrastruttura) aggiungendo backend e
+# frontend in modalità sviluppo: hot-reload, codice sorgente montato da
+# host, nessuna installazione locale di Node/Angular richiesta oltre a
+# Docker stesso — pensato per chiunque voglia contribuire al progetto
+# senza dover replicare l'ambiente di sviluppo sulla propria macchina
+# (coerente con DR03, adottabilità in contesti eterogenei).
+#
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# I segreti (credenziali AWS, Cognito, admin di default) restano in
+# backend/.env, l'unica fonte di verità sia per l'esecuzione nativa sia
+# per quella in container (env_file sotto). Le variabili di CONNESSIONE a
+# Postgres/Redis vengono invece sovrascritte esplicitamente qui: in
+# backend/.env puntano a "localhost" per l'esecuzione nativa, ma dentro un
+# container "localhost" è il container stesso, non l'host — servono i nomi
+# dei servizi Docker (postgres, redis) risolvibili sulla rete interna di
+# Compose. `environment:` ha sempre precedenza su `env_file` per la stessa
+# chiave, quindi questa sovrascrittura è sicura e non richiede di toccare
+# il file .env.
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: bugboard26-backend-dev
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # ts-node-dev usa chokidar per rilevare i cambiamenti ai file: come
+      # per --poll su ng serve, un bind mount da host Windows non sempre
+      # propaga in modo affidabile gli eventi nativi del filesystem, quindi
+      # il watcher può restare "cieco" a modifiche pur avvenute davvero sul
+      # disco (causa di un bug reale, risolto controllando manualmente il
+      # contenuto del file dentro al container). Il polling esplicito lo
+      # rende affidabile a costo di un controllo periodico invece che
+      # istantaneo — accettabile per un ambiente di sviluppo locale.
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
+    volumes:
+      - ./backend:/app
+      # Volume anonimo: "scherma" node_modules del container da quello
+      # montato dall'host, che potrebbe non esistere o contenere moduli
+      # nativi compilati per il sistema operativo sbagliato (es. Windows
+      # invece di Linux) se l'host ha già eseguito npm install localmente.
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: bugboard26-frontend-dev
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
