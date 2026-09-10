@@ -4,6 +4,9 @@ import { createHmac } from 'node:crypto';
 import {
   CognitoIdentityProviderClient,
   AdminCreateUserCommand,
+  AdminGetUserCommand,
+  AdminSetUserPasswordCommand,
+  UsernameExistsException,
   InitiateAuthCommand,
   RespondToAuthChallengeCommand,
   AuthFlowType,
@@ -34,44 +37,98 @@ export class CognitoService {
       .digest('base64');
   }
 
+  /**
+   * Stessa idempotenza già motivata su creaUtenteCognitoConPassword: un
+   * amministratore potrebbe ricreare un utente con un'email già orfana su
+   * Cognito (es. dopo un reset del solo database locale) — senza questo
+   * fallback, l'operazione fallirebbe con UsernameExistsException anche
+   * se dal punto di vista dell'amministratore sta semplicemente "creando
+   * un utente che non vede più nella sua lista".
+   */
   async creaUtenteCognito(email: string): Promise<string> {
-    const comando = new AdminCreateUserCommand({
-      UserPoolId: USER_POOL_ID,
-      Username: email,
-      UserAttributes: [
-        { Name: 'email', Value: email },
-        { Name: 'email_verified', Value: 'true' },
-      ],
-    });
-    const risposta = await cognitoClient.send(comando);
-    const subAttribute = risposta.User?.Attributes?.find((a) => a.Name === 'sub');
-    if (!subAttribute?.Value) throw new Error('COGNITO_SUB_MANCANTE');
-    return subAttribute.Value;
+    try {
+      const comando = new AdminCreateUserCommand({
+        UserPoolId: USER_POOL_ID,
+        Username: email,
+        UserAttributes: [
+          { Name: 'email', Value: email },
+          { Name: 'email_verified', Value: 'true' },
+        ],
+      });
+      const risposta = await cognitoClient.send(comando);
+      const subAttribute = risposta.User?.Attributes?.find((a) => a.Name === 'sub');
+      if (!subAttribute?.Value) throw new Error('COGNITO_SUB_MANCANTE');
+      return subAttribute.Value;
+    } catch (errore) {
+      if (!(errore instanceof UsernameExistsException)) throw errore;
+
+      const comandoGet = new AdminGetUserCommand({ UserPoolId: USER_POOL_ID, Username: email });
+      const utenteEsistente = await cognitoClient.send(comandoGet);
+      const subAttribute = utenteEsistente.UserAttributes?.find((a) => a.Name === 'sub');
+      if (!subAttribute?.Value) throw new Error('COGNITO_SUB_MANCANTE');
+      return subAttribute.Value;
+    }
   }
 
   /**
-   * Variante usata solo dallo script di seed dell'admin di default (punto 1
+   * Variante usata dallo script di seed dell'admin di default (punto 1
    * traccia: "credenziali di default"). A differenza di creaUtenteCognito,
    * qui la password temporanea è nota ed esplicita (non generata da Cognito),
    * e MessageAction: 'SUPPRESS' evita il tentativo di invio email — l'email
    * di default può essere un placeholder (es. admin@bugboard26.local) che
    * non riceverebbe comunque nulla.
+   *
+   * Idempotente rispetto a Cognito: se l'utente esiste già lì (tipico dopo
+   * un reset del solo database locale — `docker compose down -v` cancella
+   * Postgres, ma Cognito è un servizio esterno e resta invariato — oppure
+   * in caso di doppia esecuzione accidentale dello script di seed),
+   * recupera il `sub` già esistente e riporta anche la password al valore
+   * di default, invece di fallire: le credenziali stampate a schermo da
+   * seed-admin.ts devono restare sempre valide, sia per un account nuovo
+   * sia per uno solo ricollegato.
    */
   async creaUtenteCognitoConPassword(email: string, passwordTemporanea: string): Promise<string> {
-    const comando = new AdminCreateUserCommand({
-      UserPoolId: USER_POOL_ID,
-      Username: email,
-      TemporaryPassword: passwordTemporanea,
-      MessageAction: 'SUPPRESS',
-      UserAttributes: [
-        { Name: 'email', Value: email },
-        { Name: 'email_verified', Value: 'true' },
-      ],
-    });
-    const risposta = await cognitoClient.send(comando);
-    const subAttribute = risposta.User?.Attributes?.find((a) => a.Name === 'sub');
-    if (!subAttribute?.Value) throw new Error('COGNITO_SUB_MANCANTE');
-    return subAttribute.Value;
+    try {
+      const comando = new AdminCreateUserCommand({
+        UserPoolId: USER_POOL_ID,
+        Username: email,
+        TemporaryPassword: passwordTemporanea,
+        MessageAction: 'SUPPRESS',
+        UserAttributes: [
+          { Name: 'email', Value: email },
+          { Name: 'email_verified', Value: 'true' },
+        ],
+      });
+      const risposta = await cognitoClient.send(comando);
+      const subAttribute = risposta.User?.Attributes?.find((a) => a.Name === 'sub');
+      if (!subAttribute?.Value) throw new Error('COGNITO_SUB_MANCANTE');
+      return subAttribute.Value;
+    } catch (errore) {
+      if (!(errore instanceof UsernameExistsException)) throw errore;
+
+      // A differenza di creaUtenteCognito (utenti reali, la cui password
+      // scelta dall'utente non va mai toccata), qui il chiamante è sempre
+      // e solo seed-admin.ts: le credenziali stampate a schermo devono
+      // essere sempre valide, sia che l'account sia nuovo sia che venga
+      // solo ricollegato dopo un reset del database locale — quindi la
+      // password va riportata esplicitamente al valore di default,
+      // mantenendo lo stesso stato "cambio obbligatorio al primo accesso"
+      // (Permanent: false) di un account davvero appena creato.
+      const comandoGet = new AdminGetUserCommand({ UserPoolId: USER_POOL_ID, Username: email });
+      const utenteEsistente = await cognitoClient.send(comandoGet);
+      const subAttribute2 = utenteEsistente.UserAttributes?.find((a) => a.Name === 'sub');
+      if (!subAttribute2?.Value) throw new Error('COGNITO_SUB_MANCANTE');
+
+      const comandoSetPassword = new AdminSetUserPasswordCommand({
+        UserPoolId: USER_POOL_ID,
+        Username: email,
+        Password: passwordTemporanea,
+        Permanent: false,
+      });
+      await cognitoClient.send(comandoSetPassword);
+
+      return subAttribute2.Value;
+    }
   }
 
   async login(email: string, password: string): Promise<TokenAutenticazione | SfidaPrimoAccesso> {

@@ -235,6 +235,7 @@ export class IssueList implements OnInit {
       if (dati) {
         this.issueService.creaIssue(this.progettoId, dati).subscribe({
           next: () => this.caricaIssue(),
+          error: () => alert('Si è verificato un errore durante la creazione della issue. Riprova.'),
         });
       }
     });
@@ -329,6 +330,9 @@ export class IssueList implements OnInit {
         next: () => {
           this.annullaCreazioneInline();
           this.caricaIssue();
+        },
+        error: () => {
+          this.erroreCreazioneRapida = 'Si è verificato un errore durante la creazione della issue. Riprova.';
         },
       });
   }

@@ -19,6 +19,7 @@ export class IssueNuova {
   creaIssue(dati: DatiFormIssue): void {
     this.issueService.creaIssue(this.progettoId, dati).subscribe({
       next: () => this.router.navigate(['/progetti', this.progettoId, 'issues']),
+      error: () => alert('Si è verificato un errore durante la creazione della issue. Riprova.'),
     });
   }
 

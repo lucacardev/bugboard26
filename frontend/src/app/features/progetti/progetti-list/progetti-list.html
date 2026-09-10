@@ -4,32 +4,38 @@
 
     @if (caricamento()) {
       <p class="stato-testo">Caricamento...</p>
-    } @else if (progetti().length === 0) {
-      <p class="stato-testo">Nessun progetto disponibile.</p>
     } @else {
-      <div class="griglia-progetti">
-        @for (progetto of progettiPaginati(); track progetto.id) {
-          <button class="card-progetto" (click)="apriProgetto(progetto)">
-            <span class="card-nome">{{ progetto.nome }}</span>
-            @if (progetto.descrizione) {
-              <span class="card-descrizione">{{ progetto.descrizione }}</span>
-            }
-          </button>
-        }
+      @if (progetti().length === 0) {
+        <p class="stato-testo">Nessun progetto disponibile.</p>
+      }
 
-        @if (isAdmin) {
-          <button class="card-progetto card-nuovo" (click)="nuovoProgetto()">
-            <span class="card-nuovo-icona">+</span>
-            <span class="card-nome">Crea nuovo progetto</span>
-          </button>
-        }
-      </div>
+      @if (progetti().length > 0 || isAdmin) {
+        <div class="griglia-progetti">
+          @for (progetto of progettiPaginati(); track progetto.id) {
+            <button class="card-progetto" (click)="apriProgetto(progetto)">
+              <span class="card-nome">{{ progetto.nome }}</span>
+              @if (progetto.descrizione) {
+                <span class="card-descrizione">{{ progetto.descrizione }}</span>
+              }
+            </button>
+          }
 
-      <app-paginator
-        [paginaCorrente]="paginaCorrente()"
-        [totalePagine]="totalePagine()"
-        (cambiaPagina)="paginaCorrente.set($event)">
-      </app-paginator>
+          @if (isAdmin) {
+            <button class="card-progetto card-nuovo" (click)="nuovoProgetto()">
+              <span class="card-nuovo-icona">+</span>
+              <span class="card-nome">Crea nuovo progetto</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (progetti().length > 0) {
+        <app-paginator
+          [paginaCorrente]="paginaCorrente()"
+          [totalePagine]="totalePagine()"
+          (cambiaPagina)="paginaCorrente.set($event)">
+        </app-paginator>
+      }
     }
   </main>
 </div>

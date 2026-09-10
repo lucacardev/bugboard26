@@ -139,7 +139,7 @@
 
         <div class="campo-laterale">
           <label class="campo-laterale-label">Priorità</label>
-          @if (puoModificareStato) {
+          @if (isAdmin) {
             <select class="campo-laterale-input" [ngModel]="issueAttuale.priorita" (ngModelChange)="cambiaPriorita($event)">
               <option [ngValue]="null">Nessuna</option>
               <option value="bassa">Bassa</option>

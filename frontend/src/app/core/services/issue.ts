@@ -73,8 +73,8 @@ export class IssueService {
     descrizione: string;
     tipo: TipoIssue;
     priorita: string;
-    dataInizio: string;
-    dataScadenza: string;
+    dataInizio: string | null;
+    dataScadenza: string | null;
     assegnatarioId: number;
   }>) {
     return this.http.post<Issue>(`${this.apiUrl}/issues`, { ...dati, progettoId }, { withCredentials: true });

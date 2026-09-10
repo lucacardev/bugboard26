@@ -40,6 +40,16 @@ export class TeamDetail implements OnInit {
     return this.tuttiGliUtenti().filter((u) => !idGiaMembri.has(u.id) && u.ruolo !== 'amministratore');
   });
 
+  // Distingue "non esiste ancora nessun candidato nel sistema" da "esistono
+  // candidati ma sono già tutti membri di questo team": stesso risultato
+  // (utentiDisponibili vuoto) ma causa diversa, e merita un messaggio
+  // diverso — altrimenti un admin al primissimo utilizzo, senza ancora
+  // aver creato nessun utente normale, si vede detto "sono già membri",
+  // che è falso, invece di "creane uno prima".
+  nessunUtenteNonAdminEsistente = computed(() => {
+    return this.tuttiGliUtenti().every((u) => u.ruolo === 'amministratore');
+  });
+
   get isAdmin(): boolean {
     return this.auth.currentUser()?.ruolo === 'amministratore';
   }

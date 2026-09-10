@@ -161,11 +161,13 @@ export class IssueController {
     }
     try {
       const id = Number(req.params.id);
-      const issueEsistente = await this.issueService.getIssue(id);
 
-      const autorizzato = req.utente!.ruolo === 'amministratore' || issueEsistente.assegnatarioId === req.utente!.id;
-      if (!autorizzato) {
-        res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Non sei l\'assegnatario di questa issue' } });
+      // Punto 9: a differenza dello stato (punto 6, riservato anche
+      // all'assegnatario), la priorità è un campo di pianificazione/triage,
+      // non di contenuto della segnalazione — riservata esclusivamente
+      // all'Amministratore, come le date (§1.5.3, §3.3).
+      if (req.utente!.ruolo !== 'amministratore') {
+        res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Solo un amministratore può modificare la priorità' } });
         return;
       }
 

@@ -16,7 +16,11 @@
         <p class="messaggio-errore">{{ errore }}</p>
       }
       @if (utentiDisponibili().length === 0) {
-        <p class="stato-testo">Tutti gli utenti sono già membri di questo team.</p>
+        @if (nessunUtenteNonAdminEsistente()) {
+          <p class="stato-testo">Non esiste ancora nessun utente non amministratore nel sistema. Creane uno da "Nuovo utente" prima di poterlo aggiungere a un team.</p>
+        } @else {
+          <p class="stato-testo">Tutti gli utenti sono già membri di questo team.</p>
+        }
       } @else {
         <select class="select-utente" [(ngModel)]="utenteDaAggiungere">
           <option value="" disabled selected>Seleziona un utente...</option>

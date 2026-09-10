@@ -27,7 +27,22 @@ export class IssueService {
   async segnalaIssue(tipo: TipoIssue, dati: DatiCreazioneIssue): Promise<Issue> {
     const nuovaIssue = IssueFactory.creaIssue(tipo, dati);
     const issueSalvata = await this.issueRepository.save(nuovaIssue);
-    await this.notifica({ issue: issueSalvata, descrizione: 'Issue creata', autoreId: dati.segnalatoreId });
+    await this.notifica({
+      issue: issueSalvata,
+      descrizione: 'Issue creata',
+      autoreId: dati.segnalatoreId,
+
+      // Esplicito a null (non omesso): un'issue appena creata non ha mai
+      // avuto un assegnatario precedente. Senza questo campo,
+      // NotificationObserver non può distinguere "nessuna informazione
+      // sull'assegnazione in questo evento" (undefined, es. un semplice
+      // cambio di stato) da "l'issue nasce senza assegnatario" (null) — e
+      // se l'Estensione #3 (punto 4 traccia) crea l'issue con un
+      // assegnatario già scelto dall'admin, quella persona non riceverebbe
+      // mai la notifica di assegnazione altrimenti.
+      
+      assegnatarioPrecedente: null,
+    });
     return issueSalvata;
   }
 

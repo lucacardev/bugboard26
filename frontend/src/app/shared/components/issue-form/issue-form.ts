@@ -8,8 +8,8 @@ export interface DatiFormIssue {
   descrizione: string;
   tipo: TipoIssue;
   priorita: string;
-  dataInizio: string;
-  dataScadenza: string;
+  dataInizio: string | null;
+  dataScadenza: string | null;
   assegnatarioId?: number;
 }
 
@@ -51,6 +51,16 @@ export class IssueForm implements OnInit {
 
   onSalva(): void {
     if (!this.dati.titolo.trim()) return;
-    this.salva.emit(this.dati);
+    // I campi data, se lasciati intonsi dall'utente, restano '' (stringa
+    // vuota) per via del valore iniziale del form — ma '' non è un valore
+    // valido per una colonna DATE lato Postgres (a differenza di null, che
+    // la colonna accetta essendo opzionale): senza questa normalizzazione,
+    // creare una issue senza compilare le date fa fallire l'inserimento a
+    // livello di database.
+    this.salva.emit({
+      ...this.dati,
+      dataInizio: this.dati.dataInizio || null,
+      dataScadenza: this.dati.dataScadenza || null,
+    });
   }
 }
