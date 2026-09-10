@@ -14,6 +14,14 @@ jest.mock('../notification.queue', () => ({
 
 import { codaNotifiche } from '../notification.queue';
 
+// TeamRepository/UserRepository sono usati solo dal ramo di notifica agli
+// stakeholder al completamento (notificaStakeholderCompletamento): un mock
+// che restituisce "nessun team trovato" fa sì che quel ramo si interrompa
+// subito (if (!team) return;), lasciando invariato il comportamento già
+// verificato dai test esistenti, che non riguardano quella funzionalità.
+const teamRepositoryFinto = { findByProgettoId: jest.fn().mockResolvedValue(null) } as any;
+const userRepositoryFinto = { findByTeam: jest.fn() } as any;
+
 function creaIssueDiTest(
   overrides: Partial<{
     id: number;
@@ -40,7 +48,7 @@ describe('NotificationObserver.aggiorna', () => {
   const codaAddFinta = codaNotifiche.add as jest.Mock;
 
   beforeEach(() => {
-    observer = new NotificationObserver();
+    observer = new NotificationObserver(teamRepositoryFinto, userRepositoryFinto);
     codaAddFinta.mockClear();
   });
 
