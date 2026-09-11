@@ -3,8 +3,7 @@
 import { Request, Response } from 'express';
 import { AttachmentService } from '../../services/attachment/attachment.service';
 
-const TIPI_MIME_CONSENTITI = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
-const DIMENSIONE_MASSIMA_BYTES = 10 * 1024 * 1024; // 10 MB
+const TIPI_MIME_CONSENTITI = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'application/pdf'];
 
 export class AttachmentController {
   constructor(private readonly attachmentService: AttachmentService) {}

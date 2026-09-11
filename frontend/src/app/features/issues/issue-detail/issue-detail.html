@@ -70,7 +70,7 @@
           @if (!isStakeholder) {
             <label class="bottone-allegato" [class.disabilitato]="uploadInCorso()">
               {{ uploadInCorso() ? 'Caricamento...' : '+ Allegato' }}
-              <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" (change)="onFileSelezionato($event)" [disabled]="uploadInCorso()">
+              <input type="file" [attr.accept]="accettaFile" (change)="onFileSelezionato($event)" [disabled]="uploadInCorso()">
             </label>
             @if (erroreAllegato()) {
               <p class="errore-allegato">{{ erroreAllegato() }}</p>

@@ -21,7 +21,6 @@ import { Etichetta } from '../../../core/models/etichetta.model';
 import { Allegato } from '../../../core/models/allegato.model';
 
 const COLORI_ETICHETTA = ['#3949ab', '#e65100', '#2e7d32', '#c62828', '#6a1b9a', '#00838f'];
-const TIPI_MIME_CONSENTITI = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'];
 const DIMENSIONE_MASSIMA_BYTES = 10 * 1024 * 1024; // 10 MB, stesso limite del backend
 
 @Component({
@@ -282,6 +281,15 @@ export class IssueDetail implements OnInit {
     });
   }
 
+  // Tipi ammessi indipendentemente dal tipo di issue — specchia lato
+  // frontend Issue.tipiAllegatoConsentiti() del backend, che resta comunque
+  // l'unica fonte di verità autorevole (questo è solo un anticipo di UX).
+  private readonly tipiMimeConsentiti = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'application/pdf'];
+
+  get accettaFile(): string {
+    return this.tipiMimeConsentiti.join(',');
+  }
+
   onFileSelezionato(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -293,8 +301,8 @@ export class IssueDetail implements OnInit {
     // Validazione lato client: stesso vincolo del backend, per un feedback
     // immediato senza dover aspettare il giro di rete (il backend resta
     // comunque l'unica fonte di verità, questo è solo un anticipo di UX).
-    if (!TIPI_MIME_CONSENTITI.includes(file.type)) {
-      this.erroreAllegato.set('Formato non supportato. Sono ammesse solo immagini (PNG, JPEG, GIF, WEBP).');
+    if (!this.tipiMimeConsentiti.includes(file.type)) {
+      this.erroreAllegato.set('Formato non supportato. Sono ammesse immagini (PNG, JPEG, GIF, WEBP) o PDF.');
       return;
     }
     if (file.size > DIMENSIONE_MASSIMA_BYTES) {
