@@ -1,0 +1,26 @@
+# Estende docker-compose.yml + docker-compose.prod.yml per servire il
+# frontend in HTTPS reale (certificato Let's Encrypt via nip.io, dominio
+# gratuito derivato dall'IP pubblico) con reverse proxy verso il backend,
+# invece dell'accesso diretto su porte separate (4200/3000) usato nel test
+# in locale. Specifico per un deploy con IP pubblico fisso (Elastic IP) e
+# nessun dominio proprio — non è pensato per essere usato in locale.
+#
+# Prerequisiti: certificato già ottenuto con certbot (vedi README), e le
+# porte 80/443 aperte nel Security Group EC2.
+#
+# Uso:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.https.yml up --build -d
+services:
+  backend:
+    # Non più esposto pubblicamente: nginx lo raggiunge internamente sulla
+    # rete Docker (backend:3000), senza bisogno di pubblicare la porta
+    # sull'host — riduce la superficie d'attacco, l'unico punto d'ingresso
+    # pubblico resta nginx con TLS.
+    ports: []
+
+  frontend:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
