@@ -6,6 +6,7 @@ export interface Utente {
   username: string;
   email: string;
   ruolo: RuoloUtente;
+  attivato: boolean;
   createdAt: string;
   updatedAt: string;
 }

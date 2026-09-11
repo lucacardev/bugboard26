@@ -18,6 +18,8 @@
       @if (utentiDisponibili().length === 0) {
         @if (nessunUtenteNonAdminEsistente()) {
           <p class="stato-testo">Non esiste ancora nessun utente non amministratore nel sistema. Creane uno da "Nuovo utente" prima di poterlo aggiungere a un team.</p>
+        } @else if (soloUtentiNonAttivatiRestano()) {
+          <p class="stato-testo">Ci sono utenti non ancora aggiunti a questo team, ma devono prima completare il primo accesso.</p>
         } @else {
           <p class="stato-testo">Tutti gli utenti sono già membri di questo team.</p>
         }

@@ -30,10 +30,12 @@ export class UserService {
   }
 
   async creaUtente(dati: DatiCreazioneUtente): Promise<Utente> {
-    const esistente = await this.userRepository.findByEmail(dati.email);
-    if (esistente) throw new Error('EMAIL_GIA_IN_USO');
+    const emailEsistente = await this.userRepository.findByEmail(dati.email);
+    if (emailEsistente) throw new Error('EMAIL_GIA_IN_USO');
+    const usernameEsistente = await this.userRepository.findByUsername(dati.username);
+    if (usernameEsistente) throw new Error('USERNAME_GIA_IN_USO');
     const cognitoSub = await this.cognitoService.creaUtenteCognito(dati.email);
-    return this.userRepository.create({ cognitoSub, username: dati.username, email: dati.email, ruolo: dati.ruolo });
+    return this.userRepository.create({ cognitoSub, username: dati.username, email: dati.email, ruolo: dati.ruolo, attivato: false });
   }
 
   async getTuttiGliUtenti(): Promise<Utente[]> {

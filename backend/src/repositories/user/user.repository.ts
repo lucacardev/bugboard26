@@ -16,6 +16,14 @@ export class UserRepository {
     return Utente.findOne({ where: { email } });
   }
 
+  async findByUsername(username: string): Promise<Utente | null> {
+    return Utente.findOne({ where: { username } });
+  }
+
+  async attivaUtenteByEmail(email: string): Promise<void> {
+    await Utente.update({ attivato: true }, { where: { email } });
+  }
+
   async create(dati: CreationAttributes<Utente>): Promise<Utente> {
     return Utente.create(dati);
   }

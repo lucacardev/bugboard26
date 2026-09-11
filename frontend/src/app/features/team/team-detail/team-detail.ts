@@ -35,9 +35,12 @@ export class TeamDetail implements OnInit {
   // Gli amministratori sono esclusi: la traccia (punto 4, 9) li tratta sempre come
   // agenti che assegnano/governano le issue, mai come membri operativi di un team;
   // il loro accesso completo (punto 9) è già garantito via ruolo, non via appartenenza.
+  // Gli utenti non ancora attivati (primo accesso non completato) sono esclusi
+  // altrettanto: un admin non deve poter assegnare responsabilità operative
+  // a un account che ancora non può nemmeno autenticarsi stabilmente.
   utentiDisponibili = computed(() => {
     const idGiaMembri = new Set(this.membri().map((m) => m.id));
-    return this.tuttiGliUtenti().filter((u) => !idGiaMembri.has(u.id) && u.ruolo !== 'amministratore');
+    return this.tuttiGliUtenti().filter((u) => !idGiaMembri.has(u.id) && u.ruolo !== 'amministratore' && u.attivato);
   });
 
   // Distingue "non esiste ancora nessun candidato nel sistema" da "esistono
@@ -48,6 +51,18 @@ export class TeamDetail implements OnInit {
   // che è falso, invece di "creane uno prima".
   nessunUtenteNonAdminEsistente = computed(() => {
     return this.tuttiGliUtenti().every((u) => u.ruolo === 'amministratore');
+  });
+
+  // Terzo caso distinto da nessunUtenteNonAdminEsistente: esistono candidati
+  // non-admin e non ancora membri di questo team, ma sono tutti in attesa
+  // di completare il primo accesso — messaggio diverso da "sono già membri"
+  // (falso) e da "non esiste nessun utente" (altrettanto falso).
+  soloUtentiNonAttivatiRestano = computed(() => {
+    const idGiaMembri = new Set(this.membri().map((m) => m.id));
+    const candidatiPossibili = this.tuttiGliUtenti().filter(
+      (u) => !idGiaMembri.has(u.id) && u.ruolo !== 'amministratore'
+    );
+    return candidatiPossibili.length > 0 && candidatiPossibili.every((u) => !u.attivato);
   });
 
   get isAdmin(): boolean {

@@ -2,16 +2,27 @@
 
 import { Request, Response } from 'express';
 import { CognitoService } from '../../services/user/cognito.service';
+import { UserRepository } from '../../repositories/user/user.repository';
 
 const OPZIONI_COOKIE = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // HTTPS obbligatorio solo in produzione, non in dev locale su http
+  // Deliberatamente disaccoppiato da NODE_ENV: quest'ultimo indica solo se
+  // il codice gira in build di produzione, non se esiste un HTTPS reale
+  // davanti al server (es. un deploy demo su IP pubblico senza dominio/TLS
+  // configurato). Un cookie Secure non viene mai inviato dal browser su
+  // connessioni HTTP semplici — eccetto l'eccezione speciale che i browser
+  // riservano a "localhost", che non si applica a un IP pubblico reale.
+  // Default a 'true' (sicuro) a meno che non sia esplicitamente disattivato.
+  secure: process.env.COOKIE_SECURE !== 'false',
   sameSite: 'lax' as const,
   maxAge: 60 * 60 * 1000, // 1 ora, coerente con la scadenza dell'accessToken Cognito
 };
 
 export class AuthController {
-  constructor(private readonly cognitoService: CognitoService) {}
+  constructor(
+    private readonly cognitoService: CognitoService,
+    private readonly userRepository: UserRepository
+  ) {}
 
   login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
@@ -41,6 +52,7 @@ export class AuthController {
     }
     try {
       const risultato = await this.cognitoService.completaPrimoAccesso(email, nuovaPassword, session);
+      await this.userRepository.attivaUtenteByEmail(email);
       res.cookie('accessToken', risultato.accessToken, OPZIONI_COOKIE);
       res.status(200).json({ richiedeNuovaPassword: false });
     } catch (errore) {
