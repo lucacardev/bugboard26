@@ -16,7 +16,6 @@ import attachmentRoutes from './routes/attachment.routes';
 import authRoutes from './routes/auth.routes';
 import cronologiaRoutes from './routes/cronologia.routes';
 import notificationRoutes from './routes/notification.routes';
-import './services/notification/notification.worker'; // avvia il Worker BullMQ nello stesso processo
 import cookieParser from 'cookie-parser';
 
 import './models/Utente';

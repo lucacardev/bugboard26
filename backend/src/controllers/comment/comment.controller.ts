@@ -62,4 +62,31 @@ export class CommentoController {
       res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante la modifica del commento' } });
     }
   };
+
+  eliminaCommento = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const id = Number(req.params.id);
+
+      // A differenza della modifica (solo l'autore, per non alterare parole
+      // che non sono le proprie), l'eliminazione ammette anche l'amministratore:
+      // capacità di moderazione già coerente con l'accesso completo che gli
+      // è riconosciuto altrove nel sistema (punto 9 traccia).
+      const commentoEsistente = await this.commentoService.getCommento(id);
+      const autorizzato = commentoEsistente.autoreId === req.utente!.id || req.utente!.ruolo === 'amministratore';
+      if (!autorizzato) {
+        res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Non sei l\'autore di questo commento' } });
+        return;
+      }
+
+      await this.commentoService.eliminaCommento(id);
+      res.status(204).send();
+    } catch (errore) {
+      if (errore instanceof Error && errore.message === 'COMMENTO_NON_TROVATO') {
+        res.status(404).json({ errore: { codice: 'COMMENTO_NON_TROVATO', messaggio: 'Nessun commento trovato con questo id' } });
+        return;
+      }
+      console.error('Errore durante l\'eliminazione del commento:', errore);
+      res.status(500).json({ errore: { codice: 'ERRORE_INTERNO', messaggio: 'Si è verificato un errore durante l\'eliminazione del commento' } });
+    }
+  };
 }

@@ -1,0 +1,11 @@
+# Analogo a backend/Dockerfile.dev: nessun build statico, ts-node-dev
+# ricompila a ogni salvataggio, codice montato da volume da
+# docker-compose.dev.yml.
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+CMD ["npm", "run", "dev:worker"]

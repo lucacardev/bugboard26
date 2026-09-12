@@ -54,6 +54,27 @@ services:
       # invece di Linux) se l'host ha già eseguito npm install localmente.
       - /app/node_modules
 
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.worker.dev
+    container_name: bugboard26-worker-dev
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./backend/.env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "1000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
   frontend:
     build:
       context: ./frontend

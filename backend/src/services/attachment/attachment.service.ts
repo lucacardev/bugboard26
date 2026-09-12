@@ -20,6 +20,7 @@ export interface ConfermaCaricamentoAllegato {
   urlKey: string;
   nomeFile: string;
   issueId: number;
+  caricatoDa: number;
 }
 
 export class AttachmentService {
@@ -50,6 +51,7 @@ export class AttachmentService {
         issueId: dati.issueId,
         dimensione: metadatiReali.dimensione,
         tipoMime: metadatiReali.tipoMime,
+        caricatoDa: dati.caricatoDa,
     });
   }
 
@@ -61,6 +63,12 @@ export class AttachmentService {
     const allegato = await this.attachmentRepository.findById(id);
     if (!allegato) throw new Error('ALLEGATO_NON_TROVATO');
     return this.s3Service.generaUrlDownload(allegato.urlKey);
+  }
+
+  async getAllegato(id: number): Promise<Allegato> {
+    const allegato = await this.attachmentRepository.findById(id);
+    if (!allegato) throw new Error('ALLEGATO_NON_TROVATO');
+    return allegato;
   }
 
   async eliminaAllegato(id: number): Promise<void> {

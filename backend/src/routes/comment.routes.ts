@@ -15,5 +15,6 @@ const commentoController = new CommentoController(commentoService);
 router.post('/commenti', autenticazione, vietaStakeholder, commentoController.scriviCommento);
 router.get('/issues/:issueId/commenti', autenticazione, commentoController.getCommentiIssue);
 router.patch('/commenti/:id', autenticazione, vietaStakeholder, commentoController.modificaTesto);
+router.delete('/commenti/:id', autenticazione, vietaStakeholder, commentoController.eliminaCommento);
 
 export default router;

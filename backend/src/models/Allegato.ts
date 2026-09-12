@@ -10,6 +10,7 @@ export class Allegato extends Model<InferAttributes<Allegato>, InferCreationAttr
   declare tipoMime: string;
   declare dimensione: number;
   declare issueId: number;
+  declare caricatoDa: CreationOptional<number | null>;
 }
 
 Allegato.init(
@@ -20,6 +21,10 @@ Allegato.init(
     tipoMime: { type: DataTypes.STRING, allowNull: false },
     dimensione: { type: DataTypes.INTEGER, allowNull: false },
     issueId: { type: DataTypes.INTEGER, allowNull: false },
+    // Nullable per compatibilità con allegati caricati prima dell'introduzione
+    // di questo campo (vedi migration): un allegato senza caricatore noto
+    // resta eliminabile solo da un amministratore.
+    caricatoDa: { type: DataTypes.INTEGER, allowNull: true },
   },
   {
     sequelize,

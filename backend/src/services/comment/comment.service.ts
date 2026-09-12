@@ -32,4 +32,10 @@ export class CommentoService {
     commento.modificaTesto(nuovoTesto);
     return this.commentoRepository.save(commento);
   }
+
+  async eliminaCommento(id: number): Promise<void> {
+    const commento = await this.commentoRepository.findById(id);
+    if (!commento) throw new Error('COMMENTO_NON_TROVATO');
+    await this.commentoRepository.delete(commento);
+  }
 }

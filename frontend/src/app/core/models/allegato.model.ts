@@ -5,6 +5,7 @@ export interface Allegato {
   tipoMime: string;
   dimensione: number;
   issueId: number;
+  caricatoDa: number | null;
   createdAt: string;
   updatedAt: string;
 }

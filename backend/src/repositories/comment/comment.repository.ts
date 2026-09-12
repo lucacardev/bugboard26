@@ -24,4 +24,8 @@ export class CommentoRepository {
   async save(commento: Commento): Promise<Commento> {
     return commento.save();
   }
+
+  async delete(commento: Commento): Promise<void> {
+    await commento.destroy();
+  }
 }

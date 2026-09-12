@@ -35,7 +35,7 @@ export class AttachmentController {
         return;
     }
     try {
-        const allegato = await this.attachmentService.confermaCaricamento({ urlKey, nomeFile, issueId });
+        const allegato = await this.attachmentService.confermaCaricamento({ urlKey, nomeFile, issueId, caricatoDa: req.utente!.id });
         res.status(201).json(allegato);
     } catch (errore) {
         if (errore instanceof Error && errore.message === 'FILE_NON_TROVATO_SU_S3') {
@@ -76,6 +76,18 @@ export class AttachmentController {
   eliminaAllegato = async (req: Request, res: Response): Promise<void> => {
     try {
       const id = Number(req.params.id);
+
+      // Stesso schema già usato per i commenti: chi l'ha caricato, oppure
+      // un amministratore (capacità di moderazione). Un allegato senza
+      // caricatore noto (caricatoDa null, precedente all'introduzione di
+      // questo campo) resta eliminabile solo dall'amministratore.
+      const allegatoEsistente = await this.attachmentService.getAllegato(id);
+      const autorizzato = allegatoEsistente.caricatoDa === req.utente!.id || req.utente!.ruolo === 'amministratore';
+      if (!autorizzato) {
+        res.status(403).json({ errore: { codice: 'NON_AUTORIZZATO', messaggio: 'Non hai caricato tu questo allegato' } });
+        return;
+      }
+
       await this.attachmentService.eliminaAllegato(id);
       res.status(204).send();
     } catch (errore) {

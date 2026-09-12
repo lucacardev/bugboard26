@@ -1,0 +1,26 @@
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY tsconfig.json ./
+COPY src ./src
+RUN npm run build
+
+# ---- Stage finale: solo ciò che serve a runtime ----
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# Codice compilato: il Worker usa solo dist/worker.js e le sue dipendenze
+# dirette (model Notifica, repository/service notifiche), ma è più semplice
+# e meno fragile copiare l'intera cartella dist compilata piuttosto che
+# provare a isolare i soli file effettivamente necessari.
+COPY --from=build /app/dist ./dist
+
+CMD ["node", "dist/worker.js"]

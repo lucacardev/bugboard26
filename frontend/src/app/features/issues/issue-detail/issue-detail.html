@@ -58,7 +58,7 @@
                   {{ allegato.nomeFile }}
                 </button>
                 <span class="allegato-dimensione">{{ formattaDimensione(allegato.dimensione) }}</span>
-                @if (isAdmin) {
+                @if (isAdmin || eMio(allegato.caricatoDa)) {
                   <button type="button" class="allegato-elimina" (click)="eliminaAllegatoFile(allegato)">&times;</button>
                 }
               </div>
@@ -85,10 +85,33 @@
             @for (commento of commenti(); track commento.id) {
               <div class="commento" [class.commento-mio]="eMio(commento.autoreId)">
                 <div class="commento-intestazione">
-                  <span class="commento-autore">{{ nomeAutore(commento) }}</span>
-                  <span class="commento-data">{{ commento.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  <div class="commento-intestazione-info">
+                    <span class="commento-autore">{{ nomeAutore(commento) }}</span>
+                    <span class="commento-data">{{ commento.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  @if (commentoInModificaId !== commento.id && (eMio(commento.autoreId) || isAdmin)) {
+                    <div class="commento-icone-azioni">
+                      @if (eMio(commento.autoreId)) {
+                        <button type="button" class="icona-azione" title="Modifica" (click)="apriModificaCommento(commento)">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                      }
+                      <button type="button" class="icona-azione icona-azione-pericolo" title="Elimina" (click)="eliminaCommentoFile(commento)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  }
                 </div>
-                <p class="commento-testo">{{ commento.testo }}</p>
+
+                @if (commentoInModificaId === commento.id) {
+                  <textarea class="commento-modifica-testo" [(ngModel)]="testoModificaCommento" rows="2"></textarea>
+                  <div class="commento-modifica-azioni">
+                    <button type="button" class="link-azione" (click)="confermaModificaCommento()">Salva</button>
+                    <button type="button" class="link-azione" (click)="annullaModificaCommento()">Annulla</button>
+                  </div>
+                } @else {
+                  <p class="commento-testo">{{ commento.testo }}</p>
+                }
               </div>
             } @empty {
               <p class="stato-testo">Nessun commento.</p>

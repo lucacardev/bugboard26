@@ -14,6 +14,7 @@ const authController = new AuthController(cognitoService, userRepository);
 
 router.post('/auth/login', authController.login);
 router.post('/auth/completa-primo-accesso', authController.completaPrimoAccesso);
+router.post('/auth/logout', autenticazione, authController.logout);
 router.get('/auth/me', autenticazione, authController.me);
 
 export default router;

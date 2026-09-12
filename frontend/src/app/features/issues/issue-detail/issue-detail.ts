@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../core/services/auth';
 import { IssueService } from '../../../core/services/issue';
 import { ProgettoService } from '../../../core/services/progetto';
@@ -25,7 +26,7 @@ const DIMENSIONE_MASSIMA_BYTES = 10 * 1024 * 1024; // 10 MB, stesso limite del b
 
 @Component({
   selector: 'app-issue-detail',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, MatIconModule],
   templateUrl: './issue-detail.html',
   styleUrl: './issue-detail.scss',
 })
@@ -232,6 +233,41 @@ export class IssueDetail implements OnInit {
         this.nuovoCommento = '';
         this.caricaCommenti();
       },
+      error: () => alert('Si è verificato un errore durante l\'invio del commento. Riprova.'),
+    });
+  }
+
+  commentoInModificaId: number | null = null;
+  testoModificaCommento = '';
+
+  apriModificaCommento(commento: Commento): void {
+    this.commentoInModificaId = commento.id;
+    this.testoModificaCommento = commento.testo;
+  }
+
+  annullaModificaCommento(): void {
+    this.commentoInModificaId = null;
+    this.testoModificaCommento = '';
+  }
+
+  confermaModificaCommento(): void {
+    const testo = this.testoModificaCommento.trim();
+    if (!testo || this.commentoInModificaId === null) return;
+
+    this.commentoService.modificaCommento(this.commentoInModificaId, testo).subscribe({
+      next: () => {
+        this.annullaModificaCommento();
+        this.caricaCommenti();
+      },
+      error: () => alert('Si è verificato un errore durante la modifica del commento. Riprova.'),
+    });
+  }
+
+  eliminaCommentoFile(commento: Commento): void {
+    if (!confirm('Eliminare questo commento?')) return;
+    this.commentoService.eliminaCommento(commento.id).subscribe({
+      next: () => this.caricaCommenti(),
+      error: () => alert('Si è verificato un errore durante l\'eliminazione del commento. Riprova.'),
     });
   }
 
@@ -350,6 +386,7 @@ export class IssueDetail implements OnInit {
     if (!confirm(`Eliminare l'allegato "${allegato.nomeFile}"?`)) return;
     this.attachmentService.eliminaAllegato(allegato.id).subscribe({
       next: () => this.caricaAllegati(),
+      error: () => alert('Si è verificato un errore durante l\'eliminazione dell\'allegato. Riprova.'),
     });
   }
 
@@ -373,9 +410,13 @@ export class IssueDetail implements OnInit {
     return commento.autore?.username ?? this.nomeUtenteDaId(commento.autoreId);
   }
 
-  // Usato anche dal template per lo stile distintivo dei propri commenti.
-  eMio(autoreId: number): boolean {
-    return autoreId === this.auth.currentUser()?.id;
+  // Usato anche dal template per lo stile distintivo dei propri commenti, e
+  // per determinare se l'utente corrente può modificare/eliminare un
+  // commento o un allegato (autoreId/caricatoDa può essere null per un
+  // allegato precedente all'introduzione di questo campo — in quel caso
+  // non è mai "mio", resta eliminabile solo da un amministratore).
+  eMio(autoreId: number | null): boolean {
+    return autoreId !== null && autoreId === this.auth.currentUser()?.id;
   }
 
   private nomeUtenteDaId(utenteId: number): string {
