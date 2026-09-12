@@ -206,6 +206,14 @@ npm run dev
 ```
 Disponibile su `http://localhost:3000`.
 
+**Il Worker delle notifiche è un processo separato**, non parte insieme al comando sopra: apri
+un secondo terminale e lancialo a parte, altrimenti nessuna notifica verrà mai effettivamente
+recapitata (resterebbe in coda su Redis, mai consumata).
+```bash
+cd backend
+npm run dev:worker
+```
+
 **3. Frontend**
 ```bash
 cd frontend

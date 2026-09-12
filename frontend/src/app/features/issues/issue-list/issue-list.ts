@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed, HostListener } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -80,6 +80,7 @@ export class IssueList implements OnInit {
 
   colonnaCreazioneAttiva: StatoIssue | null = null;
   titoloNuovaIssue = '';
+  descrizioneNuovaIssue = '';
   erroreCreazioneRapida = '';
 
   // Stato della toolbar a icone della creazione rapida (stile Jira)
@@ -244,6 +245,7 @@ export class IssueList implements OnInit {
   apriCreazioneInline(): void {
     this.colonnaCreazioneAttiva = 'todo';
     this.titoloNuovaIssue = '';
+    this.descrizioneNuovaIssue = '';
     this.tipoNuovaIssue = 'bug';
     this.prioritaNuovaIssue = '';
     this.scadenzaNuovaIssue = '';
@@ -255,8 +257,15 @@ export class IssueList implements OnInit {
   annullaCreazioneInline(): void {
     this.colonnaCreazioneAttiva = null;
     this.titoloNuovaIssue = '';
+    this.descrizioneNuovaIssue = '';
     this.menuRapidoAperto = null;
     this.erroreCreazioneRapida = '';
+  }
+
+  @ViewChild('descrizioneRapidaInput') descrizioneRapidaInput?: ElementRef<HTMLInputElement>;
+
+  focusDescrizioneRapida(): void {
+    this.descrizioneRapidaInput?.nativeElement.focus();
   }
 
   toggleMenuRapido(nome: MenuRapido): void {
@@ -307,10 +316,19 @@ export class IssueList implements OnInit {
 
   confermaCreazioneInline(): void {
     const titolo = this.titoloNuovaIssue.trim();
+    const descrizione = this.descrizioneNuovaIssue.trim();
+
     if (!titolo) {
       this.erroreCreazioneRapida = 'Inserisci un titolo per la issue';
       return;
     }
+
+    if (!descrizione) {
+      this.erroreCreazioneRapida = 'Inserisci una descrizione per la issue';
+      this.focusDescrizioneRapida();
+      return;
+    }
+
     this.erroreCreazioneRapida = '';
 
     // Data di inizio impostata di default ad oggi, non richiesta esplicitamente
@@ -320,6 +338,7 @@ export class IssueList implements OnInit {
     this.issueService
       .creaIssue(this.progettoId, {
         titolo,
+        descrizione,
         tipo: this.tipoNuovaIssue,
         priorita: this.prioritaNuovaIssue || undefined,
         dataInizio: oggi,

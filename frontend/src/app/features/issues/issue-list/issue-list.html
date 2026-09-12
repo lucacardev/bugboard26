@@ -123,6 +123,15 @@
                   type="text"
                   [(ngModel)]="titoloNuovaIssue"
                   placeholder="Che cosa occorre fare?"
+                  (keydown.enter)="focusDescrizioneRapida()"
+                  (keydown.escape)="annullaCreazioneInline()">
+
+                <input
+                  #descrizioneRapidaInput
+                  class="creazione-input creazione-input-descrizione"
+                  type="text"
+                  [(ngModel)]="descrizioneNuovaIssue"
+                  placeholder="Breve descrizione (obbligatoria)"
                   (keydown.enter)="confermaCreazioneInline()"
                   (keydown.escape)="annullaCreazioneInline()">
 

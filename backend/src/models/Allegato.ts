@@ -16,7 +16,7 @@ export class Allegato extends Model<InferAttributes<Allegato>, InferCreationAttr
 Allegato.init(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    urlKey: { type: DataTypes.STRING, allowNull: false },
+    urlKey: { type: DataTypes.STRING, allowNull: false, unique: true },
     nomeFile: { type: DataTypes.STRING, allowNull: false },
     tipoMime: { type: DataTypes.STRING, allowNull: false },
     dimensione: { type: DataTypes.INTEGER, allowNull: false },

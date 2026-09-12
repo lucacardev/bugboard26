@@ -15,12 +15,14 @@ import { autenticazione, soloAmministratore, vietaStakeholder } from '../middlew
 const router = Router();
 
 const issueRepository = new IssueRepository();
-const issueService = new IssueService(issueRepository);
+const teamRepository = new TeamRepository();
+const issueService = new IssueService(issueRepository, teamRepository);
 
 const cronologiaRepository = new CronologiaRepository();
 const cronologiaService = new CronologiaService(cronologiaRepository);
+
 issueService.attach(new CronologiaObserver(cronologiaService));
-issueService.attach(new NotificationObserver(new TeamRepository(), new UserRepository()));
+issueService.attach(new NotificationObserver(teamRepository, new UserRepository()));
 
 const issueController = new IssueController(issueService);
 

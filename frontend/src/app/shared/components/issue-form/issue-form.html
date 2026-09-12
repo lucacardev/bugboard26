@@ -1,7 +1,12 @@
 <form class="issue-form" (ngSubmit)="onSalva()">
+
   @if (campoEditabile('tipo')) {
     <label class="campo-label">Tipo</label>
-    <select class="campo-input" [(ngModel)]="dati.tipo" name="tipo">
+
+    <select
+      class="campo-input"
+      [(ngModel)]="dati.tipo"
+      name="tipo">
       <option value="bug">Bug</option>
       <option value="question">Question</option>
       <option value="documentation">Documentation</option>
@@ -11,17 +16,42 @@
 
   @if (campoEditabile('titolo')) {
     <label class="campo-label">Titolo *</label>
-    <input class="campo-input" type="text" [(ngModel)]="dati.titolo" name="titolo" placeholder="Titolo della issue" required>
+
+    <input
+      class="campo-input"
+      type="text"
+      [(ngModel)]="dati.titolo"
+      name="titolo"
+      placeholder="Titolo della issue"
+      required>
   }
 
   @if (campoEditabile('descrizione')) {
-    <label class="campo-label">Descrizione</label>
-    <textarea class="campo-input campo-textarea" [(ngModel)]="dati.descrizione" name="descrizione" rows="4" placeholder="Descrizione (opzionale)"></textarea>
+    <label class="campo-label">Descrizione *</label>
+
+    <textarea
+      class="campo-input campo-textarea"
+      [(ngModel)]="dati.descrizione"
+      name="descrizione"
+      rows="4"
+      placeholder="Descrizione della issue"
+      required>
+    </textarea>
+  }
+
+  @if (erroreValidazione) {
+    <div class="errore-validazione">
+      {{ erroreValidazione }}
+    </div>
   }
 
   @if (campoEditabile('priorita')) {
     <label class="campo-label">Priorità</label>
-    <select class="campo-input" [(ngModel)]="dati.priorita" name="priorita">
+
+    <select
+      class="campo-input"
+      [(ngModel)]="dati.priorita"
+      name="priorita">
       <option value="">Nessuna</option>
       <option value="bassa">Bassa</option>
       <option value="media">Media</option>
@@ -31,31 +61,64 @@
 
   @if (campoEditabile('assegnatario')) {
     <label class="campo-label">Assegnatario</label>
-    <select class="campo-input" [(ngModel)]="dati.assegnatarioId" name="assegnatarioId">
+
+    <select
+      class="campo-input"
+      [(ngModel)]="dati.assegnatarioId"
+      name="assegnatarioId">
+
       <option [ngValue]="undefined">Non assegnata</option>
+
       @for (membro of membriTeam(); track membro.id) {
-        <option [value]="membro.id">{{ membro.username }}</option>
+        <option [value]="membro.id">
+          {{ membro.username }}
+        </option>
       }
+
     </select>
   }
 
   <div class="campo-riga">
+
     @if (campoEditabile('dataInizio')) {
       <div class="campo-colonna">
         <label class="campo-label">Data inizio</label>
-        <input class="campo-input" type="date" [(ngModel)]="dati.dataInizio" name="dataInizio">
+
+        <input
+          class="campo-input"
+          type="date"
+          [(ngModel)]="dati.dataInizio"
+          name="dataInizio">
       </div>
     }
+
     @if (campoEditabile('dataScadenza')) {
       <div class="campo-colonna">
         <label class="campo-label">Data scadenza</label>
-        <input class="campo-input" type="date" [(ngModel)]="dati.dataScadenza" name="dataScadenza">
+
+        <input
+          class="campo-input"
+          type="date"
+          [(ngModel)]="dati.dataScadenza"
+          name="dataScadenza">
       </div>
     }
+
   </div>
 
   <div class="azioni">
-    <button type="button" class="bottone-annulla" (click)="annulla.emit()">Annulla</button>
-    <button type="submit" class="bottone-salva">{{ testoBottone() }}</button>
+    <button
+      type="button"
+      class="bottone-annulla"
+      (click)="annulla.emit()">
+      Annulla
+    </button>
+
+    <button
+      type="submit"
+      class="bottone-salva">
+      {{ testoBottone() }}
+    </button>
   </div>
+
 </form>

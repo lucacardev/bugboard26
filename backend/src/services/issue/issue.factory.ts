@@ -22,7 +22,7 @@ export class IssueFactory {
    * il salvataggio resta responsabilità del Repository.
    */
   static creaIssue(tipo: TipoIssue, dati: DatiCreazioneIssue): Issue {
-    const attributi = { ...dati, tipo, stato: 'todo' as const };
+    const attributi = { ...dati, assegnatarioId: dati.assegnatarioId ?? null, tipo, stato: 'todo' as const };
 
     switch (tipo) {
       case 'bug':

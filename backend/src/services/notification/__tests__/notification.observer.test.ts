@@ -48,6 +48,9 @@ describe('NotificationObserver.aggiorna', () => {
   const codaAddFinta = codaNotifiche.add as jest.Mock;
 
   beforeEach(() => {
+    teamRepositoryFinto.findByProgettoId.mockReset();
+    teamRepositoryFinto.findByProgettoId.mockResolvedValue(null);
+    userRepositoryFinto.findByTeam.mockReset();
     observer = new NotificationObserver(teamRepositoryFinto, userRepositoryFinto);
     codaAddFinta.mockClear();
   });
@@ -69,6 +72,51 @@ describe('NotificationObserver.aggiorna', () => {
       messaggio: 'La tua issue "Bug critico" è stata completata',
       issueId: 4,
     });
+  });
+
+  it('notifica anche gli stakeholder del team quando l\'issue passa a "done", ma non gli altri ruoli', async () => {
+    teamRepositoryFinto.findByProgettoId.mockResolvedValueOnce({ id: 7, progettoId: 1, nome: 'Team di test' });
+    userRepositoryFinto.findByTeam.mockResolvedValueOnce([
+      { id: 20, ruolo: 'normale' },
+      { id: 21, ruolo: 'stakeholder' },
+      { id: 22, ruolo: 'stakeholder' },
+      { id: 23, ruolo: 'amministratore' },
+    ]);
+
+    const issue = creaIssueDiTest({ titolo: 'Bug con stakeholder', stato: 'done', segnalatoreId: 9 });
+    const evento: EventoIssue = {
+      issue,
+      descrizione: 'Stato cambiato da "in_progress" a "done"',
+      autoreId: 2,
+      statoPrecedente: 'in_progress',
+    };
+
+    await observer.aggiorna(evento);
+
+    expect(codaAddFinta).toHaveBeenCalledTimes(3);
+    expect(codaAddFinta).toHaveBeenCalledWith('issue-completata', {
+      destinatarioId: 9,
+      messaggio: 'La tua issue "Bug con stakeholder" è stata completata',
+      issueId: 4,
+    });
+    expect(codaAddFinta).toHaveBeenCalledWith('issue-completata', {
+      destinatarioId: 21,
+      messaggio: 'La issue "Bug con stakeholder" è stata completata',
+      issueId: 4,
+    });
+    expect(codaAddFinta).toHaveBeenCalledWith('issue-completata', {
+      destinatarioId: 22,
+      messaggio: 'La issue "Bug con stakeholder" è stata completata',
+      issueId: 4,
+    });
+    expect(codaAddFinta).not.toHaveBeenCalledWith(
+      'issue-completata',
+      expect.objectContaining({ destinatarioId: 20 })
+    );
+    expect(codaAddFinta).not.toHaveBeenCalledWith(
+      'issue-completata',
+      expect.objectContaining({ destinatarioId: 23 })
+    );
   });
 
   it('non mette in coda nulla per un cambio di stato che non porta a "done"', async () => {

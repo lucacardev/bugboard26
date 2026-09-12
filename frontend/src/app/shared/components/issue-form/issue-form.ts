@@ -20,16 +20,24 @@ export interface DatiFormIssue {
   styleUrl: './issue-form.scss',
 })
 export class IssueForm implements OnInit {
-  editableFields = input<string[]>(['titolo', 'descrizione', 'tipo', 'priorita', 'dataInizio', 'dataScadenza']);
+  editableFields = input<string[]>([
+    'titolo',
+    'descrizione',
+    'tipo',
+    'priorita',
+    'dataInizio',
+    'dataScadenza',
+  ]);
+
   valoriIniziali = input<Partial<DatiFormIssue>>({});
   testoBottone = input('Crea issue');
-  // Popolato solo quando 'assegnatario' è tra i campi editabili (Estensione
-  // #3, caso d'uso "Segnalare issue": l'admin può assegnare contestualmente
-  // alla creazione). Vuoto negli altri contesti d'uso del form condiviso.
+
   membriTeam = input<Utente[]>([]);
 
   salva = output<DatiFormIssue>();
   annulla = output<void>();
+
+  erroreValidazione = '';
 
   dati: DatiFormIssue = {
     titolo: '',
@@ -42,7 +50,10 @@ export class IssueForm implements OnInit {
   };
 
   ngOnInit(): void {
-    this.dati = { ...this.dati, ...this.valoriIniziali() };
+    this.dati = {
+      ...this.dati,
+      ...this.valoriIniziali(),
+    };
   }
 
   campoEditabile(nome: string): boolean {
@@ -50,15 +61,30 @@ export class IssueForm implements OnInit {
   }
 
   onSalva(): void {
-    if (!this.dati.titolo.trim()) return;
-    // I campi data, se lasciati intonsi dall'utente, restano '' (stringa
-    // vuota) per via del valore iniziale del form — ma '' non è un valore
-    // valido per una colonna DATE lato Postgres (a differenza di null, che
-    // la colonna accetta essendo opzionale): senza questa normalizzazione,
-    // creare una issue senza compilare le date fa fallire l'inserimento a
-    // livello di database.
+    this.erroreValidazione = '';
+
+    const titolo = this.dati.titolo?.trim() ?? '';
+    const descrizione = this.dati.descrizione?.trim() ?? '';
+
+    if (this.campoEditabile('titolo') && !titolo) {
+      this.erroreValidazione = 'Il titolo è obbligatorio.';
+      return;
+    }
+
+    if (this.campoEditabile('descrizione') && !descrizione) {
+      this.erroreValidazione = 'La descrizione è obbligatoria.';
+      return;
+    }
+
     this.salva.emit({
       ...this.dati,
+
+      // Normalizziamo le stringhe prima di inviarle al backend.
+      titolo,
+      descrizione,
+
+      // Gli input HTML di tipo date restituiscono '' quando vuoti.
+      // PostgreSQL invece accetta null per i campi opzionali.
       dataInizio: this.dati.dataInizio || null,
       dataScadenza: this.dati.dataScadenza || null,
     });
