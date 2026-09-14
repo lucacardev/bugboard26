@@ -2,8 +2,18 @@ import { Request, Response } from 'express';
 import { IssueService } from '../../services/issue/issue.service';
 import { TipoIssue, StatoIssue } from '../../models/Issue';
 
-const TIPI_ISSUE_CONSENTITI: TipoIssue[] = ['bug', 'question', 'documentation', 'feature'];
-const STATI_ISSUE_CONSENTITI: StatoIssue[] = ['todo', 'in_progress', 'done'];
+const TIPI_ISSUE_CONSENTITI = new Set<TipoIssue>([
+  'bug',
+  'question',
+  'documentation',
+  'feature',
+]);
+
+const STATI_ISSUE_CONSENTITI = new Set<StatoIssue>([
+  'todo',
+  'in_progress',
+  'done',
+]);
 
 export class IssueController {
   constructor(private readonly issueService: IssueService) {}
@@ -30,7 +40,7 @@ export class IssueController {
       return;
     }
 
-    if (!TIPI_ISSUE_CONSENTITI.includes(tipo as TipoIssue)) {
+    if (!TIPI_ISSUE_CONSENTITI.has(tipo as TipoIssue)) {
       res.status(400).json({
         errore: {
           codice: 'TIPO_ISSUE_NON_VALIDO',
@@ -142,7 +152,7 @@ export class IssueController {
   cambiaStato = async (req: Request, res: Response): Promise<void> => {
     const { stato } = req.body;
 
-    if (typeof stato !== 'string' || !STATI_ISSUE_CONSENTITI.includes(stato as StatoIssue)) {
+    if (typeof stato !== 'string' || !STATI_ISSUE_CONSENTITI.has(stato as StatoIssue)) {
       res.status(400).json({
         errore: {
           codice: 'STATO_NON_VALIDO',
