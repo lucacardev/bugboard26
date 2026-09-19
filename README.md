@@ -226,7 +226,7 @@ aws   = docker-compose.yml + docker-compose.prod.yml + docker-compose.https.yml
 
 ---
 
-# Modalità DEV — Docker con hot reload
+# Modalità DEV - Docker con hot reload
 
 È la modalità consigliata per modificare il progetto.
 
@@ -316,7 +316,7 @@ Il reset elimina i volumi PostgreSQL e Redis. Non usarlo su dati da conservare.
 
 ---
 
-# Modalità PROD — build di produzione in locale
+# Modalità PROD - build di produzione in locale
 
 Questa modalità usa le immagini di produzione, senza hot reload.
 
@@ -368,7 +368,7 @@ Non lanciarla in parallelo all'avvio di un nuovo container backend: il suo entry
 
 ---
 
-# Modalità nativa — backend/frontend fuori da Docker
+# Modalità nativa - backend/frontend fuori da Docker
 
 Utile per lavorare direttamente con Node e Angular mantenendo soltanto PostgreSQL e Redis in container.
 

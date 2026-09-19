@@ -10,7 +10,7 @@ const OPZIONI_COOKIE = {
   // il codice gira in build di produzione, non se esiste un HTTPS reale
   // davanti al server (es. un deploy demo su IP pubblico senza dominio/TLS
   // configurato). Un cookie Secure non viene mai inviato dal browser su
-  // connessioni HTTP semplici — eccetto l'eccezione speciale che i browser
+  // connessioni HTTP semplici - eccetto l'eccezione speciale che i browser
   // riservano a "localhost", che non si applica a un IP pubblico reale.
   // Default a 'true' (sicuro) a meno che non sia esplicitamente disattivato.
   secure: process.env.COOKIE_SECURE !== 'false',

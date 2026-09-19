@@ -47,7 +47,7 @@ export const routes: Routes = [
       // 'nuova' deve precedere ':issueId' nell'array: essendo entrambe rotte
       // a un solo segmento in più rispetto a 'issues', Angular Router prova
       // i figli nell'ordine in cui compaiono e la prima che "matcha"
-      // vince — un parametro come ':issueId' accetterebbe anche la stringa
+      // vince - un parametro come ':issueId' accetterebbe anche la stringa
       // letterale "nuova", quindi se venisse prima la intercetterebbe lui
       // e la rotta dedicata non sarebbe mai raggiunta.
       

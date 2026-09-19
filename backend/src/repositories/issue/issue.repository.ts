@@ -32,7 +32,7 @@ export class IssueRepository {
 
   /**
    * Punto 4 traccia: "Gli utenti possono visualizzare i bug loro assegnati",
-   * senza vincolo di progetto — vista cross-progetto, a differenza di
+   * senza vincolo di progetto - vista cross-progetto, a differenza di
    * findByProgetto. Include il nome del progetto di ciascuna issue, altrimenti
    * la lista sarebbe poco utile senza sapere a quale progetto appartiene.
    */

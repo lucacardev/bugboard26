@@ -317,7 +317,7 @@ export class IssueDetail implements OnInit {
     });
   }
 
-  // Tipi ammessi indipendentemente dal tipo di issue — specchia lato
+  // Tipi ammessi indipendentemente dal tipo di issue - specchia lato
   // frontend Issue.tipiAllegatoConsentiti() del backend, che resta comunque
   // l'unica fonte di verità autorevole (questo è solo un anticipo di UX).
   private readonly tipiMimeConsentiti = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'application/pdf'];
@@ -413,7 +413,7 @@ export class IssueDetail implements OnInit {
   // Usato anche dal template per lo stile distintivo dei propri commenti, e
   // per determinare se l'utente corrente può modificare/eliminare un
   // commento o un allegato (autoreId/caricatoDa può essere null per un
-  // allegato precedente all'introduzione di questo campo — in quel caso
+  // allegato precedente all'introduzione di questo campo - in quel caso
   // non è mai "mio", resta eliminabile solo da un amministratore).
   eMio(autoreId: number | null): boolean {
     return autoreId !== null && autoreId === this.auth.currentUser()?.id;

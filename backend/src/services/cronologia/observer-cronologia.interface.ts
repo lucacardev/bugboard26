@@ -11,7 +11,7 @@ export interface EventoIssue {
 }
 
 /**
- * Interfaccia Observer (Lecture 19A, Design Patterns — Observer, Behavioral).
+ * Interfaccia Observer (Lecture 19A, Design Patterns - Observer, Behavioral).
  * ConcreteObserver: CronologiaObserver, NotificationObserver.
  */
 export interface ObserverCronologia {

@@ -23,7 +23,7 @@
             <td>{{ item.titolo }}</td>
             <td><span class="badge badge-tipo">{{ item.tipo }}</span></td>
             <td><span class="badge badge-stato-{{ item.stato }}">{{ item.stato.replace('_', ' ') }}</span></td>
-            <td>{{ item.priorita || '—' }}</td>
+            <td>{{ item.priorita || '-' }}</td>
           </tr>
         }
       </tbody>

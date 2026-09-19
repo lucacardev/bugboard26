@@ -209,7 +209,7 @@
           @for (voce of cronologia(); track voce.id) {
             <div class="voce-cronologia">
               <span class="voce-testo">{{ voce.descrizione }}</span>
-              <span class="voce-data">{{ voce.autore.username }} — {{ voce.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+              <span class="voce-data">{{ voce.autore.username }} - {{ voce.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
             </div>
           } @empty {
             <p class="stato-testo">Nessuna voce di cronologia.</p>

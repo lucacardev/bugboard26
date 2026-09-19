@@ -1,5 +1,5 @@
 # Estende docker-compose.yml (infrastruttura) aggiungendo backend e frontend
-# containerizzati in modalità produzione — build multi-stage, nessun
+# containerizzati in modalità produzione - build multi-stage, nessun
 # hot-reload, pensato per una demo completa "un comando e funziona tutto"
 # o come base per un deploy reale.
 #

@@ -46,7 +46,7 @@ export class TeamDetail implements OnInit {
   // Distingue "non esiste ancora nessun candidato nel sistema" da "esistono
   // candidati ma sono già tutti membri di questo team": stesso risultato
   // (utentiDisponibili vuoto) ma causa diversa, e merita un messaggio
-  // diverso — altrimenti un admin al primissimo utilizzo, senza ancora
+  // diverso - altrimenti un admin al primissimo utilizzo, senza ancora
   // aver creato nessun utente normale, si vede detto "sono già membri",
   // che è falso, invece di "creane uno prima".
   nessunUtenteNonAdminEsistente = computed(() => {
@@ -55,7 +55,7 @@ export class TeamDetail implements OnInit {
 
   // Terzo caso distinto da nessunUtenteNonAdminEsistente: esistono candidati
   // non-admin e non ancora membri di questo team, ma sono tutti in attesa
-  // di completare il primo accesso — messaggio diverso da "sono già membri"
+  // di completare il primo accesso - messaggio diverso da "sono già membri"
   // (falso) e da "non esiste nessun utente" (altrettanto falso).
   soloUtentiNonAttivatiRestano = computed(() => {
     const idGiaMembri = new Set(this.membri().map((m) => m.id));

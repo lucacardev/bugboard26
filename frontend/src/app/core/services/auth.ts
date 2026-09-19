@@ -21,7 +21,7 @@ export class AuthService {
 
   private apiUrl = `${environment.apiUrl}/auth`;
 
-  // Utente corrente — null finché recuperaUtenteCorrente() non ha risposto
+  // Utente corrente - null finché recuperaUtenteCorrente() non ha risposto
   currentUser = signal<Utente | null>(null);
 
   /**

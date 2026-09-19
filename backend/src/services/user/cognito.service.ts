@@ -40,7 +40,7 @@ export class CognitoService {
   /**
    * Stessa idempotenza già motivata su creaUtenteCognitoConPassword: un
    * amministratore potrebbe ricreare un utente con un'email già orfana su
-   * Cognito (es. dopo un reset del solo database locale) — senza questo
+   * Cognito (es. dopo un reset del solo database locale) - senza questo
    * fallback, l'operazione fallirebbe con UsernameExistsException anche
    * se dal punto di vista dell'amministratore sta semplicemente "creando
    * un utente che non vede più nella sua lista".
@@ -74,13 +74,13 @@ export class CognitoService {
    * Variante usata dallo script di seed dell'admin di default (punto 1
    * traccia: "credenziali di default"). A differenza di creaUtenteCognito,
    * qui la password temporanea è nota ed esplicita (non generata da Cognito),
-   * e MessageAction: 'SUPPRESS' evita il tentativo di invio email — l'email
+   * e MessageAction: 'SUPPRESS' evita il tentativo di invio email - l'email
    * di default può essere un placeholder (es. admin@bugboard26.local) che
    * non riceverebbe comunque nulla.
    *
    * Idempotente rispetto a Cognito: se l'utente esiste già lì (tipico dopo
-   * un reset del solo database locale — `docker compose down -v` cancella
-   * Postgres, ma Cognito è un servizio esterno e resta invariato — oppure
+   * un reset del solo database locale - `docker compose down -v` cancella
+   * Postgres, ma Cognito è un servizio esterno e resta invariato - oppure
    * in caso di doppia esecuzione accidentale dello script di seed),
    * recupera il `sub` già esistente e riporta anche la password al valore
    * di default, invece di fallire: le credenziali stampate a schermo da
@@ -110,7 +110,7 @@ export class CognitoService {
       // scelta dall'utente non va mai toccata), qui il chiamante è sempre
       // e solo seed-admin.ts: le credenziali stampate a schermo devono
       // essere sempre valide, sia che l'account sia nuovo sia che venga
-      // solo ricollegato dopo un reset del database locale — quindi la
+      // solo ricollegato dopo un reset del database locale - quindi la
       // password va riportata esplicitamente al valore di default,
       // mantenendo lo stesso stato "cambio obbligatorio al primo accesso"
       // (Permanent: false) di un account davvero appena creato.

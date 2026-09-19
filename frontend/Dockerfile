@@ -11,7 +11,7 @@ RUN npm run build
 # ---- Stage finale: nginx serve solo i file statici compilati ----
 # Stesso approccio già usato per StreetCats: il front-end è un bundle
 # statico (HTML/CSS/JS) una volta compilato, non serve un runtime Node per
-# servirlo — nginx è più leggero e più veloce di un server Node dedicato
+# servirlo - nginx è più leggero e più veloce di un server Node dedicato
 # solo a questo scopo (NFR01, NFR10).
 FROM nginx:1.27-alpine
 
@@ -21,7 +21,7 @@ FROM nginx:1.27-alpine
 COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
 
 # Config nginx dedicata: necessaria perché Angular Router gestisce le rotte
-# lato client (NFR14 — front-end del tutto autonomo dal back-end); senza
+# lato client (NFR14 - front-end del tutto autonomo dal back-end); senza
 # questo, un reload su una rotta diversa da "/" (es. /progetti/1/issues/5)
 # darebbe 404 da nginx, perché quel path non esiste come file reale su disco.
 COPY nginx.conf /etc/nginx/conf.d/default.conf

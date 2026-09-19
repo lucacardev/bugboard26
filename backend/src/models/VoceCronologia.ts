@@ -12,7 +12,7 @@ export class VoceCronologia extends Model<InferAttributes<VoceCronologia>, Infer
   declare readonly updatedAt: CreationOptional<Date>;
   // Immutabile dopo la creazione (decisione già presa): nessun metodo di
   // modifica esposto. Il campo updatedAt esiste solo perché generato dalla
-  // migration originale — l'applicazione non lo tocca mai dopo l'insert iniziale.
+  // migration originale - l'applicazione non lo tocca mai dopo l'insert iniziale.
 }
 
 VoceCronologia.init(
