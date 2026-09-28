@@ -70,7 +70,7 @@
       <option [ngValue]="undefined">Non assegnata</option>
 
       @for (membro of membriTeam(); track membro.id) {
-        <option [value]="membro.id">
+        <option [ngValue]="membro.id">
           {{ membro.username }}
         </option>
       }

@@ -152,7 +152,7 @@
             <select class="campo-laterale-input" [ngModel]="issueAttuale.assegnatarioId" (ngModelChange)="assegna($event)">
               <option [ngValue]="null">Non assegnata</option>
               @for (membro of membriAssegnabili; track membro.id) {
-                <option [value]="membro.id">{{ membro.username }}</option>
+                <option [ngValue]="membro.id">{{ membro.username }}</option>
               }
             </select>
           } @else {
